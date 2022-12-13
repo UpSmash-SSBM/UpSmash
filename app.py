@@ -53,7 +53,7 @@ def user(connect_code):
     for rating in player_ratings:
         datetimes.append(rating.datetime.strftime("%m/%d/%Y, %H:%M:%S"))
         ratings.append(rating.rating)
-        print(rating.rating)
+        print()
     print(datetimes)
     
     return render_template('user.html', player_ratings=player_ratings, connect_code=connect_code, datetimes=datetimes, ratings=ratings)
