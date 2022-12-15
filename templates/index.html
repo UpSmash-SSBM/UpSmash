@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="content">
-    <h4>Search player: </h4>
-    <form action="/user" method="POST" enctype="multipart/form-data">
+<div class="content-section">
+    <img src="{{ url_for('static', filename='images/UpSmash-02-purple.jpg') }}" alt="UpSmash Logo" style="max-width: 100%; height: auto">
+    <br>
+    <form action="/user" method="POST" enctype="multipart/form-data" role="search">
         {{ player_search_form.hidden_tag() }}
         {{ player_search_form.connect_code() }}
         {{ player_search_form.submit() }}

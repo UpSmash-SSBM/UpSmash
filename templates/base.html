@@ -18,7 +18,6 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 
     {% if title %}
@@ -26,49 +25,48 @@
     {% else %}
         <title>UpSmash</title>
     {% endif %}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-	<script>
-		  (adsbygoogle = window.adsbygoogle || []).push{
-			      google_ad_cient: "ca-pub-2696174489744276",
-				      enable_page_level_ads: true
-			    });
-	</script>
     {% block head %}{% endblock %}
 </head>
 <body>
     <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top border-bottom" style="background-color: #695293;">
             <div class="container">
             <a class="navbar-brand mr-4" href="/">UpSmash</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarToggle">
-                <div class="navbar-nav mr-auto">
+                <!--div class="navbar-nav mr-auto">
                 <a class="nav-item nav-link" href="/">Home</a>
                 <a class="nav-item nav-link" href="/">Player Search</a>
-                </div>
+                </div-->
                 <!-- Navbar Right Side -->
             </div>
             </div>
         </nav>
     </header>
-    <main role="main" class="container">
-        <div class="row">
-            <div class="col-md-8">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{message.tags}}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% block body %}{% endblock %}
-            </div>
-            <div class="col-md-4">
-            </div>
+    <main class="container" style="height: 100%;">
+        <div class="container-lg" style="height: 100%;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{message.tags}}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% block body %}{% endblock %}
         </div>
     </main>
+    <footer class="border-top py-3 my-4" style="background-color: #695293;">
+        <ul class="nav justify-content-center pb-3 mb-3">
+          <li class="nav-item"><a href="#" class="nav-link px-2">About</a></li>
+          <li class="nav-item"><a href="#" class="nav-link px-2">Privacy Policy</a></li>
+          <li class="nav-item"><a href="#" class="nav-link px-2">FAQs</a></li>
+        </ul>
+        <p class="text-center">&copy; UpSmash, Inc. Data based on Slippi ELO and Slippi files.</p>
+    </footer>
     
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

@@ -6,7 +6,9 @@ import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import InputRequired
-from player_rating_refresh import PlayerRatingClass
+import argparse
+import sqlalchemy as db
+from sqlalchemy.orm import Session
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
@@ -15,8 +17,61 @@ app.config['SECRET_KEY'] = 'ultra_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/files'
 db = SQLAlchemy(app)
 
+class PlayerRatingClass:
+    def __init__(self):
+        engine = db.create_engine('sqlite:///db.sqlite3',{})
+        connection = engine.connect()
+        metadata = db.MetaData()
+        player_rating = db.Table('player_rating', metadata, autoload=True, autoload_with=engine)
+
+        self.engine = engine
+        self.connection = connection
+        self.player_rating = player_rating
+
+    def get_distinct_players(self):
+        player_rating_query = db.select([self.player_rating])
+        player_ratings = self.connection.execute(player_rating_query).fetchall()
+        session = Session(self.engine)
+        distinct_players = session.query(PlayerRating.connect_code).distinct().all()
+        return distinct_players
+
+    def insert_new_rating(self, connect_code): 
+        connect_code = connect_code.upper()
+        rating = self.get_rating(connect_code)
+        if rating:
+            new_insert = self.player_rating.insert().values(connect_code=connect_code, rating=rating, datetime=datetime.now())
+            self.connection.execute(new_insert)
+
+    def get_rating(self, connect_code):
+        connect_code = connect_code.upper()
+        url = "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql"
+        connection_object = {
+            "operationName": "AccountManagementPageQuery",
+            "query": "fragment userProfilePage on User {\n  fbUid\n  displayName\n  connectCode {\n    code\n    __typename\n  }\n  status\n  activeSubscription {\n    level\n    hasGiftSub\n    __typename\n  }\n  rankedNetplayProfile {\n    id\n    ratingOrdinal\n    ratingUpdateCount\n    wins\n    losses\n    dailyGlobalPlacement\n    dailyRegionalPlacement\n    continent\n    characters {\n      id\n      character\n      gameCount\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nquery AccountManagementPageQuery($cc: String!, $uid: String!) {\n  getUser(fbUid: $uid) {\n    ...userProfilePage\n    __typename\n  }\n  getConnectCode(code: $cc) {\n    user {\n      ...userProfilePage\n      __typename\n    }\n    __typename\n  }\n}\n",
+            "variables": {"cc": connect_code, "uid": connect_code},
+            "cc":connect_code,
+            "uid":connect_code
+        }
+        response = requests.post(url, json = connection_object)
+        response_json = json.loads(response.text)
+        if response.status_code != "200":
+            return False
+        if not response_json['data']['getUser']:
+            print("No user user username: " + connect_code)
+            return False
+        ranked = response_json["data"]["getConnectCode"]["user"]["rankedNetplayProfile"]
+            
+        rating = ranked['ratingOrdinal']
+        return rating
+
+    def refresh_player_ratings(self):
+        distinct_players = self.get_distinct_players()
+
+        for player_connect_code in distinct_players:
+            self.insert_new_rating(player_connect_code[0])
+
 class TextInputForm(FlaskForm):
-    connect_code = StringField("connect_code", validators=[InputRequired()])
+    connect_code = StringField("connect_code", validators=[InputRequired()], render_kw={"placeholder": "Enter player Slippi tag"})
     submit = SubmitField("Go")
 
 class PlayerRating(db.Model):
@@ -53,10 +108,15 @@ def user(connect_code):
     for rating in player_ratings:
         datetimes.append(rating.datetime.strftime("%m/%d/%Y, %H:%M:%S"))
         ratings.append(rating.rating)
-        print()
-    print(datetimes)
     
-    return render_template('user.html', player_ratings=player_ratings, connect_code=connect_code, datetimes=datetimes, ratings=ratings)
+    context = {
+        "player_ratings": player_ratings,
+        "connect_code": connect_code,
+        "datetimes": datetimes,
+        "ratings": ratings
+    }
+
+    return render_template('user.html', **context)
 
 @app.route('/all_ratings', methods=['GET'])
 def all_ratings():
