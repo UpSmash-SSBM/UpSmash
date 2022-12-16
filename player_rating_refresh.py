@@ -2,33 +2,44 @@ import argparse
 import requests
 import sqlalchemy as db
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
+from models import PlayerRating
 
 class PlayerRatingClass:
-    def __init__(self):
-        engine = db.create_engine('sqlite:///db.sqlite3')
-        connection = engine.connect()
-        metadata = db.MetaData()
-        player_rating = db.Table('player_rating', metadata, autoload=True, autoload_with=engine)
+    def __init__(self, engine_url):
+        self.engine_url = engine_url
 
-        self.engine = engine
-        self.connection = connection
-        self.player_rating = player_rating
+    def check_if_rating_is_current(self, connect_code):
+        engine = db.create_engine(self.engine_url)
+        session = Session(engine)
+        player_rating = session.query(PlayerRating).where(PlayerRating.connect_code == connect_code).order_by(PlayerRating.datetime.desc()).first()
+        if not player_rating:
+            print("New Player")
+            return False
+        time_30_minutes_ago = datetime.now() - timedelta(minutes=10)
+        return player_rating or (player_rating.datetime > time_30_minutes_ago)
 
     def get_distinct_players(self):
-        player_rating_query = db.select([self.player_rating])
-        player_ratings = self.connection.execute(player_rating_query).fetchall()
-        session = Session(self.engine)
+        engine = db.create_engine(self.engine_url)
+        session = Session(engine)
         distinct_players = session.query(PlayerRating.connect_code).distinct().all()
         return distinct_players
 
     def insert_new_rating(self, connect_code): 
+        if self.check_if_rating_is_current(connect_code): 
+            print("rating is current")
+            return False
         connect_code = connect_code.upper()
         rating = self.get_rating(connect_code)
+
+        engine = db.create_engine(self.engine_url)
+        connection = engine.connect()
+        player_rating = db.Table('player_rating', metadata, autoload=True, autoload_with=engine)
+
         if rating:
-            new_insert = self.player_rating.insert().values(connect_code=connect_code, rating=rating, datetime=datetime.now())
-            self.connection.execute(new_insert)
+            new_insert = player_rating.insert().values(connect_code=connect_code, rating=rating, datetime=datetime.now())
+            connection.execute(new_insert)
 
     def get_rating(self, connect_code):
         connect_code = connect_code.upper()
@@ -42,10 +53,11 @@ class PlayerRatingClass:
         }
         response = requests.post(url, json = connection_object)
         response_json = json.loads(response.text)
-        if response.status_code != "200":
+        if not str(response.status_code) == "200":
+            print("Bad response")
             return False
-        if not response_json['data']['getUser']:
-            print("No user user username: " + connect_code)
+        if not response_json['data']['getConnectCode']:
+            print("No user username: " + connect_code)
             return False
         ranked = response_json["data"]["getConnectCode"]["user"]["rankedNetplayProfile"]
             
@@ -66,7 +78,8 @@ if __name__ == "__main__":
     parser.add_argument('-c', dest='distinct_count', action='store_true', help='Show distinct player count')
     args = parser.parse_args()
 
-    player_rate = PlayerRatingClass()
+    engine_url = 'sqlite:///db.sqlite3'
+    player_rate = PlayerRatingClass(engine_url)
     if args.reload:
         player_rate.refresh_player_ratings()
     if args.new_player:

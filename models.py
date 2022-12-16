@@ -1,3 +1,6 @@
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 class PlayerRating(db.Model):
     """A slippi action counts"""

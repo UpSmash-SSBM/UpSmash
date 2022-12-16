@@ -72,6 +72,10 @@ button {
   border-radius: 0 .7rem .7rem 0;
 }
 
+canvas {
+  background-color: white;
+}
+
 button {
   display: block;
   position: absolute;
