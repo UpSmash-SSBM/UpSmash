@@ -1,4 +1,4 @@
-# Slippi Ranked Graphs
+# UpSmash
 
 ## Description
 

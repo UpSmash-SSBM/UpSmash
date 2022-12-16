@@ -53,6 +53,7 @@ class PlayerRatingClass:
         }
         response = requests.post(url, json = connection_object)
         response_json = json.loads(response.text)
+        print(response_json)
         if not str(response.status_code) == "200":
             print("Bad response")
             return False
