@@ -6,11 +6,9 @@
     <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'UA-143658469-1');
+        gtag('js', new Date());
+        gtag('config', 'UA-143658469-1');
     </script>
-
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -31,23 +29,23 @@
 </head>
 <body>
     <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top border-bottom" style="background-color: #695293;">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top border-bottom">
             <div class="container">
-            <a class="navbar-brand mr-4" href="/">UpSmash</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarToggle">
-                <!--div class="navbar-nav mr-auto">
-                <a class="nav-item nav-link" href="/">Home</a>
-                <a class="nav-item nav-link" href="/">Player Search</a>
-                </div-->
-                <!-- Navbar Right Side -->
-            </div>
+                <a class="navbar-brand mr-4" href="/">UpSmash</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarToggle">
+                    <!--div class="navbar-nav mr-auto">
+                    <a class="nav-item nav-link" href="/">Home</a>
+                    <a class="nav-item nav-link" href="/">Player Search</a>
+                    </div-->
+                    <!-- Navbar Right Side -->
+                </div>
             </div>
         </nav>
     </header>
-    <main class="container" style="height: 100%;">
+    <main class="container">
         <div class="container-lg" style="height: 100%;">
         {% if messages %}
             {% for message in messages %}
@@ -59,7 +57,7 @@
         {% block body %}{% endblock %}
         </div>
     </main>
-    <footer class="border-top py-3 my-4" style="background-color: #695293;">
+    <footer class="border-top py-3 my-4">
         <ul class="nav justify-content-center pb-3 mb-3">
           <li class="nav-item"><a href="#" class="nav-link px-2">About</a></li>
           <li class="nav-item"><a href="#" class="nav-link px-2">Privacy Policy</a></li>

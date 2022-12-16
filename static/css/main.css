@@ -1,7 +1,33 @@
-html {
+:root {
+  --rad: .7rem;
+  --color-light: #fff;
+  --color-brand: #fff;
+  --font-fam: 'Lato', sans-serif;
+  --height: 3.5rem;
+  --btn-width: 4rem;
+  --background-color: #695293;
+}
+
+nav {
+  background-color: var(--background-color);
+}
+
+footer {
+  background-color: var(--background-color);
+}
+
+main {
   height: 100%;
 }
-header {border-color: #594283;}
+
+
+html {
+  height: 100%; 
+  box-sizing: border-box; 
+  height: 100%; 
+  font-size: 16px; 
+}
+
 body {
   background: #8972B3;
   color: #333333;
@@ -9,23 +35,60 @@ body {
   height: 80%;
   color: white;
 }
+
+form {
+  position: relative;
+  width: 35rem;
+  background: var(--color-brand);
+  border-radius: var(--rad);
+  align-items: center; 
+  justify-content: center;
+}
+input, button {
+  height: var(--height);
+  font-family: var(--font-fam);
+  border: 0;
+  color: black;
+  font-size: 1.2rem;
+}
 input[type="search"] {
   outline: 0; 
-  width: 100%;
+  width: calc(100% - var(--btn-width));
   background: white;
   padding: 0 1.6rem;
-  border-radius: 1;
+  appearance: none; 
+  z-index: 1;
+  position: relative;
+  border-radius: .7rem 0 0 .7rem;
 }
+button {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--btn-width);
+  font-weight: bold;
+  background: var(--color-brand);
+  border-radius: 0 .7rem .7rem 0;
+}
+
+button {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--btn-width);
+  font-weight: bold;
+  background: var(--color-brand);
+  border-radius: 0 .7rem .7rem 0;
+}
+
 a {
   color: white;
 }
 
 ul {
   margin: 0;
-}
-
-.bg-steel {
-  background-color: #8972B3;
 }
 
 .site-header .navbar-nav .nav-link {
@@ -39,14 +102,3 @@ ul {
 .site-header .navbar-nav .nav-link.active {
   font-weight: 500;
 }
-
-.content-section {
-  background: #8972B3;
-  padding: 10px 20px;
-  border-radius: 3px;
-  margin-bottom: 20px;
-  text-align: center;
-  width: 100%;
-}
-
-
