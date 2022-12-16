@@ -18,6 +18,7 @@ class SlippiFile(db.Model):
 
     def __repr__(self):
         return "SlippiOverall('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(self.filename, self.connect_code, self.input_counts, self.total_damage, self.kill_count, self.successful_conversions, self.successful_conversion_ratio, self.inputs_per_minute, self.digital_inputs_per_minute, self.openings_per_kill, self.damage_per_opening, self.neutral_win_ratio, self.counter_hit_ratio, self.beneficial_trade_ratio, self.datetime)
+        
 class Player(db.model):
     """A slippi replay"""
     id = db.Column(db.Integer, primary_key=True)
