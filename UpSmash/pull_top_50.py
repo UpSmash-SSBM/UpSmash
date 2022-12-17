@@ -26,4 +26,4 @@ driver.close()
 engine_url = 'sqlite:///db.sqlite3'
 player_rate = PlayerRatingClass(engine_url)
 for player in top_50_players:
-    player_rating_class.insert_new_rating(player[1])
+   player_rate.insert_new_rating(player[1])

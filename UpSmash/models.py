@@ -26,7 +26,6 @@ class Player(db.Model):
     username = db.Column(db.String(20))
     player = db.relationship("PlayerSlippiReplay", uselist=False, lazy=True)
 
-
 """
 class AllTimePlayerStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -89,4 +88,3 @@ class PlayerSlippiReplay(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey('Player.id'), nullable=False)
     action_counts_id = db.Column(db.Integer, db.ForeignKey('SlippiActionCounts.id'))
     overall_id = db.Column(db.Integer, db.ForeignKey('SlippiOverall.id'))
-    
