@@ -19,23 +19,32 @@ class SlippiFile(db.Model):
     def __repr__(self):
         return "SlippiOverall('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(self.filename, self.connect_code, self.input_counts, self.total_damage, self.kill_count, self.successful_conversions, self.successful_conversion_ratio, self.inputs_per_minute, self.digital_inputs_per_minute, self.openings_per_kill, self.damage_per_opening, self.neutral_win_ratio, self.counter_hit_ratio, self.beneficial_trade_ratio, self.datetime)
 
-class PlayerSlippiReplay(db.Model):
+class Player(db.Model):
     """A slippi replay"""
     id = db.Column(db.Integer, primary_key=True)
     connect_code = db.Column(db.String(10), nullable=False)
     username = db.Column(db.String(20))
+    
+class PlayerSlippiReplay(db.Model):
+    """A slippi replay"""
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(100), nullable=False)
+    player_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
+    player = db.relationship("Player", backref=db.backref("player", uselist=False))
 
 class AllTimePlayerStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     connect_code_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
     connect_code = db.relationship("Player", backref=db.backref("player", uselist=False))
+    gamesPlayed = db.Column(db.Integer)
+    gamesWon = db.Column(db.Integer)
+    maxElo = db.Column(db.Integer)
 
 class SlippiActionCounts(db.Model):
     """A slippi action counts"""
     id = db.Column(db.Integer, primary_key=True)
-#    slippi_replay = db.Column(db.Integer, db.ForeignKey(PlayerSlippiReplay.id), nullable=False)
-#    connect_code = db.Column(db.Integer, db.ForeignKey(Player.id), nullable=False)
-#    slippi_action_counts = db.relationship("PlayerSlippiReplay", uselist=False, lazy=True)
+    player_slippi_replay_id = db.Column(db.Integer, db.ForeignKey("player_slippi_replay.id"), nullable=False)
+    player_code = db.relationship("PlayerSlippiReplay", backref=db.backref("player_slippi_replay", uselist=False))
     wavedash = db.Column(db.Integer)
     waveland = db.Column(db.Integer)
     airdodge = db.Column(db.Integer)
@@ -59,9 +68,8 @@ class SlippiActionCounts(db.Model):
 class SlippiOverall(db.Model):
     """A slippi action counts"""
     id = db.Column(db.Integer, primary_key=True)
-#    slippi_replay = db.Column(db.Integer, db.ForeignKey(PlayerSlippiReplay.id), nullable=False)
-#    connect_code = db.Column(db.Integer, db.ForeignKey(Player.id), nullable=False)
-#    slippi_overall = db.relationship("PlayerSlippiReplay", uselist=False, lazy=True)
+    player_slippi_replay_id = db.Column(db.Integer, db.ForeignKey("player_slippi_replay.id"), nullable=False)
+    player_code = db.relationship("PlayerSlippiReplay", backref=db.backref("player_slippi_replay", uselist=False))
     input_counts = db.Column(db.Integer)
     total_damage = db.Column(db.Float)
     kill_count = db.Column(db.Integer)
@@ -78,15 +86,3 @@ class SlippiOverall(db.Model):
 
     def __repr__(self):
         return "Slippi('{}','{}')".format(self.filename, self.lcancel)
-
-class PlayerSlippiReplay(db.Model):
-    """A slippi replay"""
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(100), nullable=False)
-    player_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
-    #player = db.relationship("Player", backref=db.backref("player", uselist=False))
-    #action_counts_id = db.Column(db.Integer, db.ForeignKey("slippi_action_counts.id"))
-    #actioncount = db.relationship("SlippiActionCounts", backref=db.backref("SlippiActionCounts", uselist=False))
-    #overall_id = db.Column(db.Integer, db.ForeignKey("slippi_overall.id"))
-    #overall = db.relationship("SlippiOverall", backref=db.backref("SlippiOverall", uselist=False))
-

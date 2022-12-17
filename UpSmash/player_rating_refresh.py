@@ -35,7 +35,7 @@ class PlayerRatingClass:
 
         engine = db.create_engine(self.engine_url)
         connection = engine.connect()
-        player_rating = db.Table('player_rating', db.MetaData(), autoload=True, autoload_with=engine)
+        player_rating = db.Table('player_rating', db.MetaData(extend_existing=True), autoload=True, autoload_with=engine)
 
         if rating:
             new_insert = player_rating.insert().values(connect_code=connect_code, rating=rating, datetime=datetime.now())
