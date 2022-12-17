@@ -14,9 +14,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ultra_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/files'
 db.init_app(app)
-
-with app.app_context():
-    db.create_all()
     
 @app.route('/', methods=['GET'])
 def index():
