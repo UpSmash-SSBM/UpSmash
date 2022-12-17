@@ -16,6 +16,9 @@
 * Chris Schmitt
     * Email: [Chris Schmitt](mailto:cjschmitt620@gmail.com)
     * Twitter: [@ChrisSchmitt98](https://twitter.com/ChrisSchmitt98)
+* Ryan Yeung
+    * Email: [Ryan Yeung](mailto:litterjack1@gmail.com)
+    * Discord: Ryguy#1314
 
 ## Version History
 
