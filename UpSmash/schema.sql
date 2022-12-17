@@ -1,8 +1,0 @@
-DROP TABLE IF EXISTS PlayerRating;
-
-CREATE TABLE PlayerRating (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  connect_code TEXT NOT NULL,
-  d_time DATETIME NOT NULL,
-  rating FLOAT NOT NULL 
-);
