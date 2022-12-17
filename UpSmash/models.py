@@ -24,20 +24,18 @@ class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     connect_code = db.Column(db.String(10), nullable=False)
     username = db.Column(db.String(20))
-    player = db.relationship("PlayerSlippiReplay", uselist=False, lazy=True)
 
-"""
 class AllTimePlayerStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    connect_code = db.Column(db.Integer, db.ForeignKey(Player.id), nullable=False)
-"""
+    connect_code_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
+    connect_code = db.relationship("Player", backref=db.backref("player", uselist=False))
 
 class SlippiActionCounts(db.Model):
     """A slippi action counts"""
     id = db.Column(db.Integer, primary_key=True)
 #    slippi_replay = db.Column(db.Integer, db.ForeignKey(PlayerSlippiReplay.id), nullable=False)
 #    connect_code = db.Column(db.Integer, db.ForeignKey(Player.id), nullable=False)
-    slippi_action_counts = db.relationship("PlayerSlippiReplay", uselist=False, lazy=True)
+#    slippi_action_counts = db.relationship("PlayerSlippiReplay", uselist=False, lazy=True)
     wavedash = db.Column(db.Integer)
     waveland = db.Column(db.Integer)
     airdodge = db.Column(db.Integer)
@@ -63,7 +61,7 @@ class SlippiOverall(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 #    slippi_replay = db.Column(db.Integer, db.ForeignKey(PlayerSlippiReplay.id), nullable=False)
 #    connect_code = db.Column(db.Integer, db.ForeignKey(Player.id), nullable=False)
-    slippi_overall = db.relationship("PlayerSlippiReplay", uselist=False, lazy=True)
+#    slippi_overall = db.relationship("PlayerSlippiReplay", uselist=False, lazy=True)
     input_counts = db.Column(db.Integer)
     total_damage = db.Column(db.Float)
     kill_count = db.Column(db.Integer)
@@ -85,6 +83,9 @@ class PlayerSlippiReplay(db.Model):
     """A slippi replay"""
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(100), nullable=False)
-    player_id = db.Column(db.Integer, db.ForeignKey('Player.id'), nullable=False)
-    action_counts_id = db.Column(db.Integer, db.ForeignKey('SlippiActionCounts.id'))
-    overall_id = db.Column(db.Integer, db.ForeignKey('SlippiOverall.id'))
+    player_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
+    #player = db.relationship("Player", backref=db.backref("player", uselist=False))
+    #action_counts_id = db.Column(db.Integer, db.ForeignKey("slippi_action_counts.id"))
+    #actioncount = db.relationship("SlippiActionCounts", backref=db.backref("SlippiActionCounts", uselist=False))
+    #overall_id = db.Column(db.Integer, db.ForeignKey("slippi_overall.id"))
+    #overall = db.relationship("SlippiOverall", backref=db.backref("SlippiOverall", uselist=False))
