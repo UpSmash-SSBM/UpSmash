@@ -60,10 +60,9 @@ class SlippiActionCounts(db.Model):
     tech = db.Column(db.Integer)
     tech_fail = db.Column(db.Integer)
     wall_tech_success_ratio = db.Column(db.Float)
-    datetime = db.Column(db.DateTime)
 
     def __repr__(self):
-        return "SlippiActionCount({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})".format(self.filename, self.connect_code, self.wavedash, self.waveland, self.airdodge, self.dashdance, self.spotdodge, self.ledgegrab, self.roll, self.lcancel_success_ratio, self.grab_success, self.grab_fail, self.tech_away, self.tech_in, self.tech, self.tech_fail, self.wall_tech_success_ratio, self.datetime)
+        return "SlippiActionCount({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})".format(self.filename, self.connect_code, self.wavedash, self.waveland, self.airdodge, self.dashdance, self.spotdodge, self.ledgegrab, self.roll, self.lcancel_success_ratio, self.grab_success, self.grab_fail, self.tech_away, self.tech_in, self.tech, self.tech_fail, self.wall_tech_success_ratio)
 
 class SlippiOverall(db.Model):
     """A slippi action counts"""
@@ -81,8 +80,8 @@ class SlippiOverall(db.Model):
     damage_per_opening = db.Column(db.Float)
     neutral_win_ratio = db.Column(db.Float)
     counter_hit_ratio = db.Column(db.Float)
-    beneficial_trade_ratio = db.Column(db.Float)
-    datetime = db.Column(db.DateTime)
-
+    beneficial_trades = db.Column(db.Float)
+    mostkill = db.Column(db.Integer)
+    neutralopen = db.Column(db.Integer)
     def __repr__(self):
         return "Slippi('{}','{}')".format(self.filename, self.lcancel)
