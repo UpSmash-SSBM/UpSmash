@@ -13,7 +13,7 @@ class PlayerRatingClass:
     def check_if_rating_is_current(self, connect_code):
         engine = db.create_engine(self.engine_url)
         session = Session(engine)
-        player_rating = session.query(PlayerRating).where(PlayerRating.connect_code == connect_code).order_by(PlayerRating.datetime.desc()).first()
+        player_rating = PlayerRating.filter_by(connect_code=connect_code).order_by(PlayerRating.datetime.desc()).first()
         if not player_rating:
             print("New Player")
             return False
@@ -32,7 +32,11 @@ class PlayerRatingClass:
             return False
         print("Getting new rating")
         connect_code = connect_code.upper()
-        rating = self.get_rating(connect_code)
+        ranked_info = self.get_rating(connect_code)
+        if not ranked_info:
+            print("No user: " + connect_code)
+            return False
+        rating = ranked_info['ratingOrdinal']
 
         engine = db.create_engine(self.engine_url)
         connection = engine.connect()
@@ -41,9 +45,11 @@ class PlayerRatingClass:
         if rating:
             new_insert = player_rating.insert().values(connect_code=connect_code, rating=rating, datetime=datetime.now())
             connection.execute(new_insert)
+        return ranked_info
 
     def get_rating(self, connect_code):
         connect_code = connect_code.upper()
+        print(connect_code)
         url = "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql"
         connection_object = {
             "operationName": "AccountManagementPageQuery",
@@ -59,13 +65,13 @@ class PlayerRatingClass:
             print("Bad response")
             return False
         if not response_json['data']['getConnectCode']:
-            #print(response_json)
+            print(response_json)
             print("No user username: " + connect_code)
             return False
         ranked = response_json["data"]["getConnectCode"]["user"]["rankedNetplayProfile"]
-            
-        rating = ranked['ratingOrdinal']
-        return rating
+        #print(ranked)
+        #rating = ranked['ratingOrdinal']
+        return ranked
 
     def refresh_player_ratings(self):
         distinct_players = self.get_distinct_players()

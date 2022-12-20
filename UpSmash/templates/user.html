@@ -6,7 +6,7 @@
 
 {% block body %}
 <div class="content">
-    <h2>{{ connect_code }}</h2>
+    <h2>{{ username }} <img src="{{ url_for('static', filename=character_image_location) }}" alt="character_icon" style="height: 40px; width: 40px;"></h2>
 
     <canvas id="lineChart" width="900" height="400"></canvas>
     <script>
