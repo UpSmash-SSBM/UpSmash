@@ -18,7 +18,7 @@ class PlayerRatingClass:
             print("New Player")
             return False
         time_30_minutes_ago = datetime.now() - timedelta(minutes=10)
-        return player_rating or (player_rating.datetime > time_30_minutes_ago)
+        return player_rating.datetime > time_30_minutes_ago
 
     def get_distinct_players(self):
         engine = db.create_engine(self.engine_url)
@@ -30,12 +30,13 @@ class PlayerRatingClass:
         if self.check_if_rating_is_current(connect_code): 
             print("rating is current")
             return False
+        print("Getting new rating")
         connect_code = connect_code.upper()
         rating = self.get_rating(connect_code)
 
         engine = db.create_engine(self.engine_url)
         connection = engine.connect()
-        player_rating = db.Table('player_rating', db.MetaData(extend_existing=True), autoload=True, autoload_with=engine)
+        player_rating = db.Table('player_rating', db.MetaData(), autoload=True, autoload_with=engine)
 
         if rating:
             new_insert = player_rating.insert().values(connect_code=connect_code, rating=rating, datetime=datetime.now())
@@ -58,6 +59,7 @@ class PlayerRatingClass:
             print("Bad response")
             return False
         if not response_json['data']['getConnectCode']:
+            #print(response_json)
             print("No user username: " + connect_code)
             return False
         ranked = response_json["data"]["getConnectCode"]["user"]["rankedNetplayProfile"]

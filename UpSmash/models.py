@@ -30,12 +30,12 @@ class PlayerSlippiReplay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(100), nullable=False)
     player_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
-    player = db.relationship("Player", backref=db.backref("player", uselist=False))
+    player = db.relationship("Player", backref=db.backref("player_replay", uselist=False))
 
 class AllTimePlayerStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     connect_code_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
-    connect_code = db.relationship("Player", backref=db.backref("player", uselist=False))
+    connect_code = db.relationship("Player", backref=db.backref("player_all_time_stats", uselist=False))
     gamesPlayed = db.Column(db.Integer)
     gamesWon = db.Column(db.Integer)
     maxElo = db.Column(db.Integer)
@@ -44,7 +44,7 @@ class SlippiActionCounts(db.Model):
     """A slippi action counts"""
     id = db.Column(db.Integer, primary_key=True)
     player_slippi_replay_id = db.Column(db.Integer, db.ForeignKey("player_slippi_replay.id"), nullable=False)
-    player_code = db.relationship("PlayerSlippiReplay", backref=db.backref("player_slippi_replay", uselist=False))
+    player_code = db.relationship("PlayerSlippiReplay", backref=db.backref("slippi_replay_action_counts", uselist=False))
     wavedash = db.Column(db.Integer)
     waveland = db.Column(db.Integer)
     airdodge = db.Column(db.Integer)
@@ -69,7 +69,7 @@ class SlippiOverall(db.Model):
     """A slippi action counts"""
     id = db.Column(db.Integer, primary_key=True)
     player_slippi_replay_id = db.Column(db.Integer, db.ForeignKey("player_slippi_replay.id"), nullable=False)
-    player_code = db.relationship("PlayerSlippiReplay", backref=db.backref("player_slippi_replay", uselist=False))
+    player_code = db.relationship("PlayerSlippiReplay", backref=db.backref("slippi_replay_overall", uselist=False))
     input_counts = db.Column(db.Integer)
     total_damage = db.Column(db.Float)
     kill_count = db.Column(db.Integer)

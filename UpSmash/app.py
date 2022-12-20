@@ -14,10 +14,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ultra_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/files'
 db.init_app(app)
-    
+
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
+
+@app.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html')
+
+@app.route('/faq', methods=['GET'])
+def faq():
+    return render_template('faq.html')
+
+@app.route('/privacy', methods=['GET'])
+def privacy():
+    return render_template('privacy.html')
 
 @app.route('/user', methods=['POST'])
 def user_redirect():
