@@ -1,0 +1,88 @@
+
+/*      
+border: 3px solid #333;
+background-color: #dfdfdf;
+*/
+.flexbox-container {
+  display: flex;
+  background-color: #333333;
+}
+
+.flexbox-container1 {
+  border: 3px solid #222222;
+  border-radius: .7rem;
+  min-height: 1000px;
+}
+
+.flexbox-container2 {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.flexbox-container3 {
+  background-color: #222222;
+}
+
+.flexbox-container4 {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.flexbox-item {
+  margin: 10px;
+  background-color: #333333;
+}
+
+.flexbox-item-1 {
+  flex: 3 0 0;
+  min-height: 500px;
+}
+
+.flexbox-item-2 {
+  flex: 10 0 0;
+}
+
+#myChart {
+  border: 3px solid #333333;
+  border-radius: .7rem;
+}
+
+.chartBox {
+  max-height: 125px;
+}
+
+.flexbox-item-3 {
+  flex: 2 0 0;
+  min-height: 125px;
+}
+
+.flexbox-player {
+  flex: 2 0 0;
+  background-color: #222222;
+  height: 20px;
+  align-items: stretch;
+  margin: 0;
+  min-height: 100px;
+  padding: 10px;
+}
+
+.flexbox-player-left {
+  border-radius: .7rem 0 0 .7rem;
+}
+
+.flexbox-player-right {
+  border-radius: 0 .7rem .7rem 0 ;
+}
+
+.flexbox-item-second {
+  min-height: 100px;
+  flex-grow: 100%;
+  border: 3px solid #222222;
+  background-color: #222222;
+  border-radius: .7rem;
+}
+
+p {
+  line-height: 10px;   /* within paragraph */
+  margin-bottom: 5px; /* between paragraphs */
+}

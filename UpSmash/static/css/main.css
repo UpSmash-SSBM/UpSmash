@@ -8,18 +8,9 @@
   --background-color: #695293;
 }
 
-nav {
-  background-color: var(--background-color);
+canvas {
+  background-color: white;
 }
-
-footer {
-  background-color: var(--background-color);
-}
-
-main {
-  height: 100%;
-}
-
 
 html {
   height: 100%; 
@@ -36,55 +27,16 @@ body {
   color: white;
 }
 
-form {
-  position: relative;
-  width: 35rem;
-  background: var(--color-brand);
-  border-radius: var(--rad);
-  align-items: center; 
-  justify-content: center;
-}
-input, button {
-  height: var(--height);
-  font-family: var(--font-fam);
-  border: 0;
-  color: black;
-  font-size: 1.2rem;
-}
-input[type="search"] {
-  outline: 0; 
-  width: calc(100% - var(--btn-width));
-  background: white;
-  padding: 0 1.6rem;
-  appearance: none; 
-  z-index: 1;
-  position: relative;
-  border-radius: .7rem 0 0 .7rem;
-}
-button {
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: var(--btn-width);
-  font-weight: bold;
-  background: var(--color-brand);
-  border-radius: 0 .7rem .7rem 0;
+main {
+  height: 100%;
 }
 
-canvas {
-  background-color: white;
+nav {
+  background-color: var(--background-color);
 }
 
-button {
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: var(--btn-width);
-  font-weight: bold;
-  background: var(--color-brand);
-  border-radius: 0 .7rem .7rem 0;
+footer {
+  background-color: var(--background-color);
 }
 
 a {
@@ -106,3 +58,10 @@ ul {
 .site-header .navbar-nav .nav-link.active {
   font-weight: 500;
 }
+
+.flexbox-container {
+  display: flex;
+}
+
+
+

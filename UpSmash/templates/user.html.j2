@@ -1,0 +1,72 @@
+{% extends 'base.html.j2' %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+{% endblock %}
+
+{% set title=username %}
+
+{% block body %}
+<div class="content">
+  <div class="flexbox-container flexbox-container1 ">
+    <div class="flexbox-item flexbox-item-1">
+      <h2>{{ player.username }} <img src="{{ url_for('static', filename=character_image_location) }}" alt="character_icon" style="height: 30px; width: 30px;"></h2>
+      <p>{{ player.connect_code }}</p>
+      <h5>Current Rating: {{ player.current_rating | int }}</h5>
+      <h5>Ranked: <span style="color: #00FF00">{{ player.ranked_wins }}</span>/<span style="color:#FF0000">{{ player.ranked_losses }}</span></h5>
+      <h5>Unranked: <span style="color: #00FF00">{{ wins }}</span>/<span style="color:#FF0000">{{ losses }}</span></h5>
+      <h5>Total SLP Files: {{ total_games }}</h5>
+    </div>
+    <div class="flexbox-item flexbox-item-2">
+      <div class="flexbox-container  flexbox-container4">
+        <div class="flexbox-item flexbox-item-3">
+          <div class="flexbox-item chartBox">
+            <canvas id="myChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="flexbox-container flexbox-container2">
+        {% if slippi_replays|length %}
+          {% for replay in slippi_replays %}
+            {% set player1_overall = replay.get_overall(1) %}
+            {% set player2_overall = replay.get_overall(2) %}
+            <div class="flexbox-item flexbox-item-second">
+              <div class="flexbox-container flexbox-container3">
+                <div class="flexbox-item flexbox-player flexbox-player-left" {% if replay.player1_id == replay.winner_id %}style="background-color: #59AD1E;"{% else %}style="background-color: #AD1E1E;"{% endif %}>
+                  <h5>{{ replay.get_player(1) }}</h5>
+                  <p>Kills: {{ player1_overall.kill_count }}</p>
+                  <p>Openings per Kill: {% if player1_overall.openings_per_kill is not none %}{{ player1_overall.openings_per_kill | float | round(1) }}{% endif %}</p>
+                  <p>Damage per Opening: {% if player1_overall.damage_per_opening is not none %}{{ player1_overall.damage_per_opening | round(1) }}{% endif %}</p>
+                </div>
+                <div class="flexbox-item flexbox-player flexbox-player-right" {% if replay.player2_id == replay.winner_id %}style="background-color: #59AD1E;"{% else %}style="background-color: #AD1E1E;"{% endif %}>
+                  <h5>{{ replay.get_player(2) }}</h5>
+                  <p>Kills: {{ player2_overall.kill_count }}</p>
+                  <p>Openings per Kill: {% if player2_overall.openings_per_kill is not none %}{{ player2_overall.openings_per_kill | float | round(1) }}{% endif %}</p>
+                  <p>Damage per Opening: {% if player2_overall.damage_per_opening is not none %}{{ player2_overall.damage_per_opening | round(1) }}{% endif %}</p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+            <div class="flexbox-item flexbox-item-second" style="padding: 10px;padding-top: 5px;">
+              <div class="flexbox-container flexbox-container3">
+              <h5>No SLP files found</h5>
+              </div>
+            </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const datapoints = [
+      {% for row in data_items %}
+      {x: new Date('{{ row[0] | safe }}'), y: {{ row[1] | safe }} },
+      {% endfor %}
+];
+</script>
+<script src="../static/js/elo_graph.js"></script>
+{% endblock %}
