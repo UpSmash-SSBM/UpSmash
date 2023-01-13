@@ -214,7 +214,9 @@ def top_50_players_thread():
     with app.app_context():
         while True:
             print("Refreshing top 50 players")
-            players = get_top_50_players()
+            #players = get_top_50_players()
+            with open('player_list.json') as f:
+                players = json.load(f)
             #print(players)
             for player in players:
                 #print(player)
