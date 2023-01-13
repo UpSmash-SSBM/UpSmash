@@ -5,7 +5,7 @@ from datetime import date
 from flask import Flask, abort, render_template, url_for, redirect, request
 from datetime import datetime, timedelta
 from models import db, MeleeCharacters, PlayerRating, Player, SlippiReplay, AllTimePlayerStats, SlippiActionCounts, SlippiOverall
-
+from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -226,7 +226,9 @@ def top_50_players_thread():
     with app.app_context():
         while True:
             print("Refreshing top 50 players")
-            players = get_top_50_players()
+            #players = get_top_50_players()
+            with open('player_list.json') as f:
+                players = json.load(f)
             #print(players)
             for player in players:
                 #print(player)
@@ -272,7 +274,6 @@ def check_refresh_timings():
 
 @app.route('/', methods=['GET'])
 def index():
-    check_refresh_timings()
     na_players = Player.query.filter_by(region='NORTH_AMERICA').order_by(Player.current_rating.desc()).limit(10)
     eu_players = Player.query.filter_by(region='EUROPE').order_by(Player.current_rating.desc()).limit(10)
     other_players = Player.query.filter(Player.region != 'NORTH_AMERICA', Player.region != 'EUROPE').order_by(Player.current_rating.desc()).limit(10)
@@ -286,7 +287,6 @@ def index():
 
 @app.route('/top_player_graph', methods=['GET'])
 def top_player_graph():
-    check_refresh_timings()
     tomorrow = date.today() + timedelta(days=1)
     dates = {}
     for i in range(7):
@@ -323,22 +323,19 @@ def top_player_graph():
                     player_rating = rating['rating']
                     break
             players_dict[player].append(player_rating)
-    print(players_dict)
+    #print(players_dict)
     return render_template('top_player_graph.html.j2', graph_dates=graph_dates, players_dict=players_dict)
 
 @app.route('/about', methods=['GET'])
 def about():
-    check_refresh_timings()
     return render_template('about.html.j2')
 
 @app.route('/faq', methods=['GET'])
 def faq():
-    check_refresh_timings()
     return render_template('faq.html.j2')
 
 @app.route('/privacy', methods=['GET'])
 def privacy():
-    check_refresh_timings()
     return render_template('privacy.html.j2')
 
 @app.route('/upload_slp', methods=['POST'])
@@ -374,7 +371,6 @@ def page_not_found(e):
 
 @app.route('/user/<player_id>', methods=['GET'])
 def user(player_id):
-    check_refresh_timings()
     if '-' in player_id: #is a tag
         possible_connect_code = player_id.replace("-","#").upper()
         current_player = Player.query.filter_by(connect_code=possible_connect_code).first()
@@ -410,4 +406,4 @@ def user(player_id):
     return render_template('user.html.j2', **context)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
