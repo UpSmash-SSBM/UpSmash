@@ -6,10 +6,16 @@ from flask import Flask, abort, render_template, url_for, redirect, request
 from datetime import datetime, timedelta
 from models import db, MeleeCharacters, PlayerRating, Player, SlippiReplay, AllTimePlayerStats, SlippiActionCounts, SlippiOverall
 from config import Config
+
 app = Flask(__name__)
 app.config.from_object(Config)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+
+if not os.path.exists('db.sqlite3'):
+    print("Creating new database")
+    with app.app_context():
+        db.create_all()
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
