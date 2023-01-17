@@ -1,7 +1,6 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 //if (require('electron-squirrel-startup')) {
 //  app.quit();
@@ -40,11 +39,13 @@ ipcMain.on('fileList', function(e, item){
   for (files in item) {
     const data = item[files].split("\\");
     const name = data[data.length - 1];
+    const response = new XMLHttpRequest();
+    response.open("POST", "http://localhost:5000/");
+    response.send(item[files]);
+    response.onload = (e) => {
+      alert(response.response);
+    };
     console.log(name);
-    fs.copyFile(item[files], 'C:\\Users\\Ryan\\Documents\\UpSmash\\UpSmash\\static\\files\\' + name, (err) =>{
-      if (err) throw err;
-      console.log(item[files] + 'has been copied successfully')
-    })
   }
   console.log(item)
 })
