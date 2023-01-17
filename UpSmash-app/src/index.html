@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+      <div>
+        <label>Specify Slippi Files (.slp) path: </label>
+        <input type="file" id="slpFolder" name="fileList" webkitdirectory multiple/>
+        <ul id="listing"></ul>
+      </div>
+    <script>
+      const electron = require('electron');
+      const { ipcRenderer } = electron;
+      document.getElementById("slpFolder").addEventListener("change", (event) => {
+      let output = document.getElementById("listing");
+      let fileList = new Array();
+      for (const file of event.target.files) {
+        fileList.push(file.path);
+        let item = document.createElement("li");
+        item.textContent = file.webkitRelativePath;
+        output.appendChild(item);
+        };
+      if (fileList.length ==  event.target.files.length) {
+        ipcRenderer.send("fileList", fileList)
+      };
+      }, false);
+    </script>
+  </body>
+</html>
