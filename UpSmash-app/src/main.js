@@ -1,6 +1,10 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { request } = require('http');
+const FormData = require('form-data');
+const { formatWithOptions } = require('util');
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 //if (require('electron-squirrel-startup')) {
 //  app.quit();
@@ -34,20 +38,36 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow) ;
 
-//Catch file adds
+const options = {
+  hostname:'localhost',
+  port: '5000',
+  path: '/upload_slp',
+  method: 'POST'
+};
+
 ipcMain.on('fileList', function(e, item){
   for (files in item) {
-    const data = item[files].split("\\");
-    const name = data[data.length - 1];
-    const response = new XMLHttpRequest();
-    response.open("POST", "http://localhost:5000/");
-    response.send(item[files]);
-    response.onload = (e) => {
-      alert(response.response);
-    };
-    console.log(name);
+    const readStream = fs.createReadStream(item[files]);
+    const form = new FormData();
+    form.append('slpFile', readStream);
+    options['headers'] = form.getHeaders();
+    // now make the request to the server
+    const req = request(options, (response) => {
+      response.setEncoding('utf8');
+      console.log(response.statusCode);
+      response.on('data', (chunk) => {
+        console.log(chunk)
+      });
+      response.on('end', () => {
+        console.log('No more data in response.');
+      });
+      req.end();
+    });
+    req.on('error', (err) => {
+      console.log(err);
+    });
+    form.pipe(req);
   }
-  console.log(item)
 })
 // Create menu template 
 const mainMenuTemplate = [
