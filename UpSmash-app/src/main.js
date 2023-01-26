@@ -13,8 +13,8 @@ const { formatWithOptions } = require('util');
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 700,
+    width: 1200,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -46,28 +46,53 @@ const options = {
 };
 
 ipcMain.on('fileList', function(e, item){
+  var batch = 11;
+  var form = new FormData();
   for (files in item) {
     const readStream = fs.createReadStream(item[files]);
-    const form = new FormData();
-    form.append('slpFile', readStream);
+    form.append(readStream['path'].split('\\')[readStream['path'].split('\\').length - 1], readStream);
     options['headers'] = form.getHeaders();
-    // now make the request to the server
-    const req = request(options, (response) => {
-      response.setEncoding('utf8');
-      console.log(response.statusCode);
-      response.on('data', (chunk) => {
-        console.log(chunk)
+    // now make the request to the server if 10 files exist
+    if (files % batch == 0 && files != 0) {
+      const req = request(options, (response) => {
+        response.setEncoding('utf8');
+        console.log(response.statusCode);
+        response.on('end', () => {
+          console.log('No more data in response.');
+        });
+        req.end();
       });
-      response.on('end', () => {
-        console.log('No more data in response.');
+      req.on('error', (err) => {
+        console.log(err);
       });
-      req.end();
-    });
-    req.on('error', (err) => {
-      console.log(err);
-    });
-    form.pipe(req);
-  }
+      form.pipe(req);
+      var form = new FormData();
+    } else if ((item.length - files) < batch) {
+      const sub_list = item.slice(files);
+      const form = new FormData();
+      for (sub_files in sub_list){
+        const readStream = fs.createReadStream(sub_list[sub_files]);
+        form.append(readStream['path'].split('\\')[readStream['path'].split('\\').length - 1], readStream);
+        options['headers'] = form.getHeaders();
+        };
+      const req = request(options, (response) => {
+        response.setEncoding('utf8');
+        console.log(response.statusCode);
+        response.on('data', (chunk) => {
+          console.log(chunk)
+        });
+        response.on('end', () => {
+          console.log('No more data in response.');
+        });
+        req.end();
+      });
+      req.on('error', (err) => {
+        console.log(err);
+      });
+      form.pipe(req);
+      break
+    }
+  };
 })
 // Create menu template 
 const mainMenuTemplate = [

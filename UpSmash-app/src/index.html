@@ -5,11 +5,14 @@
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-      <div>
+    <div id ="logo">
+      <img id="upSmashLogo" src="../../UpSmash/static/images/UpSmash-02-purple.jpg" alt="UpSmash Logo">
+      <div id = "content">
         <label>Specify Slippi Files (.slp) path: </label>
         <input type="file" id="slpFolder" name="fileList" webkitdirectory multiple/>
         <ul id="listing"></ul>
       </div>
+    </div>
     <script>
       const electron = require('electron');
       const { ipcRenderer } = electron;

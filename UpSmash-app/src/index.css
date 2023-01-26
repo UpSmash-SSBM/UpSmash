@@ -1,14 +1,36 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif;
-  color:aliceblue;
-  background-image: url("fixtures/SSBU-Pokémon_Stadium.png");
-  background-position: center;
-  background-attachment: fixed;
+  background: #695293;
+  color: #333333;
+  margin-top: 5rem;
+  height: 80%;
+  color: white;
 }
-div {
+#upSmashLogo {
+  max-width: 100%; 
+  height: auto;
+  top:0
+}
+#slpFolder{
+  margin-left: 15%;
+  padding:15px;
+  border-radius: 10px;
+}
+input[type=file] {
+  width: 60%;
+  border: 1px solid #ccc;
+}
+.flexbox-container {
+  display: flex;
+}
+#content {
   margin: auto;
   width: 50%;
   text-align: center;
-  padding: 200px;
+  padding: 25px;
+  position: relative;
+}
+#logo {
+  position:absolute;
+  top:0;
+  left:0;
 }
