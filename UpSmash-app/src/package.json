@@ -1,0 +1,22 @@
+{
+  "name": "upsmashapp",
+  "version": "1.0.0",
+  "description": "UpSmash Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Ryan Yeung",
+  "license": "MIT",
+  "dependencies": {
+    "@slippi/slippi-js": "^6.6.0",
+    "chokidar": "^3.5.3",
+    "electron": "^22.0.2",
+    "form-data": "^4.0.0",
+    "lodash": "^4.17.21"
+  },
+  "repository": {
+    "type": "git",
+    "url": "\u0016"
+  }
+}
