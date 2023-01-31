@@ -68,10 +68,9 @@ ipcMain.on('parentPath', function(e, item) {
       console.log('ADDED')
     })
     .on('change', (path) => {
-      // console.log(`Getting file: ${path}`);
-      // Date time of game start
-      // const start = Date.now();
-      let gameState, settings, stats, frames, latestFrame, gameEnd;
+      // triggers on file being written to
+      // intialize the new variables we need
+      let gameState, settings, frames, latestFrame, gameEnd;
       try {
         // create the game if it doesn't exist
         let game = _.get(gameByPath, [path, "game"]); //Confused on this, is it trying to create an empty file if it doesnt exist?
@@ -92,10 +91,12 @@ ipcMain.on('parentPath', function(e, item) {
         latestFrame = game.getLatestFrame();
         gameEnd = game.getGameEnd();
         metadata = game.getMetadata();
+        writeOp = game.SlpFileWriterOptions
       } catch (err) {
         console.log(err);
         return;
       }
+
       const matchId = settings['matchInfo']['matchId'];
       const matchSub = matchId.split('.')[1];
       const matchType = matchSub.split('-')[0];
@@ -105,10 +106,17 @@ ipcMain.on('parentPath', function(e, item) {
         gameState.settings = settings;
       }
       if (true || matchType == 'ranked') {
-        // console.log(gameEnd)
-        // gameEnd will be null until the game is over 
+        console.log(gameEnd)
+        // gameEnd will be null until the game is over
         if (gameEnd) {
-          console.log('ITS ALLLL OVER')
+          const endTypes = {
+            1: "TIME!",
+            2: "GAME!",
+            7: "No Contest",
+          };
+          const endMessage = _.get(endTypes, gameEnd.gameEndMethod) || "Unknown";
+          const lrasText = gameEnd.gameEndMethod === 7 ? ` | Quitter Index: ${gameEnd.lrasInitiatorIndex}` : "";
+          console.log(`[Game Complete] Type: ${endMessage}${lrasText}`)
           // console.log(gameEnd)
           players = settings['players']
           for (let i = 0; i < players.length; i++) {
@@ -120,7 +128,6 @@ ipcMain.on('parentPath', function(e, item) {
               }
             }
           }
-          
           console.log(player_wins)
           fileList.push(path);
           if (fileList.length == 10) {
@@ -128,19 +135,7 @@ ipcMain.on('parentPath', function(e, item) {
           };
         }
       }
-      //console.log(`Read took: ${Date.now() - start} ms`);
-      //console.log(`We have ${_.size(frames)} frames.`);
-      //_.forEach(settings.players, (player) => {
-      //  const frameData = _.get(latestFrame, ["players", player.playerIndex]);
-      // if (!frameData) {
-      //    return;
-      //  }
-
-      //  console.log(
-      //    `[Port ${player.port}] ${frameData.post.percent.toFixed(1)}% | ` + `${frameData.post.stocksRemaining} stocks`,
-      //  );
     });
-    
   });
 
 //calls api for uploading files
@@ -153,7 +148,7 @@ const SLPoptions = {
 // this function submits a list of local files in batches of 10
 // any leftovers are submitted after
 
-function fileSubmit (item) {
+async function fileSubmit (item) {
   var batch = 11;
   var form = new FormData();
   for (files in item) {
