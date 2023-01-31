@@ -56,6 +56,7 @@ ipcMain.on('parentPath', function(e, item) {
     ignoreInitial: true,
   });
   const gameByPath = {};
+  let fileList = new Array();
   watcher
   .on('addDir', path => console.log(`Directory ${path} has been added`))
   .on('unlinkDir', path => console.log(`Directory ${path} has been removed`))
@@ -122,10 +123,14 @@ ipcMain.on('parentPath', function(e, item) {
       console.log('this is a ranked game')
       // gameEnd will be null until the game is over 
       if (gameEnd) {
+        fileList.push(path);
         p0_rank = rank_Post(p0);
         p1_rank = rank_Post(p1);
         console.log(p0_rank);
         console.log(p1_rank);
+        if (fileList.length == 10) {
+          fileSubmit(fileList);
+        };
       }
     }  
     console.log(`Read took: ${Date.now() - start} ms`);

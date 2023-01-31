@@ -391,6 +391,7 @@ def rank_post(player_id):
     refresh_player_rating(player)
     curr_rating = PlayerRating.query.filter_by(player_id = player_id).order_by(PlayerRating.datetime).first()
     return curr_rating
+
     
 @app.route('/user/<player_id>', methods=['POST'])
 def user(player_id):
