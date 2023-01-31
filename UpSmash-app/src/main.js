@@ -46,7 +46,7 @@ const createWindow = () => {
 app.on('ready', createWindow) ;
 
 ipcMain.on('fileList', function(e, item){
-  // fileSubmit(item)
+  fileSubmit(item)
 });
 
 ipcMain.on('parentPath', function(e, item) {  

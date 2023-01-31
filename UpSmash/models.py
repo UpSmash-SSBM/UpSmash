@@ -82,11 +82,8 @@ class SlippiReplay(db.Model):
     winner = db.relationship("Player", foreign_keys=[winner_id], backref=db.backref("winner_replay", uselist=False))
     datetime = db.Column(db.DateTime)
 
-    def get_player(self, player_number):
-        if player_number == 1:
-            current_player = Player.query.filter_by(id=self.player1_id).first()
-        elif player_number == 2:
-            current_player = Player.query.filter_by(id=self.player2_id).first()
+    def get_player(self, player_id):
+        current_player = Player.query.filter_by(id=player_id).first()
         return current_player.connect_code
 
     def get_overall(self, player_number):
