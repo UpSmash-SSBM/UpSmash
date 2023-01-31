@@ -78,11 +78,34 @@ background-color: #dfdfdf;
   min-height: 100px;
   flex-grow: 100%;
   border: 3px solid #222222;
-  background-color: #222222;
+  /*background-color: #222222;*/
   border-radius: .7rem;
+}
+
+.detail{
+  font-size: 12px;
+}
+
+.stat{
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+#matchDetail{
+  margin-bottom: 50px;
+  display: none;
+}
+
+#detailWrapper{
+  display: flex;
+  flex-direction: column;
 }
 
 p {
   line-height: 10px;   /* within paragraph */
   margin-bottom: 5px; /* between paragraphs */
+}
+
+div{
+  display: block;
 }

@@ -21,7 +21,7 @@ options: {
       offset: true
     },
     y: {
-      beginAtZero: true
+      beginAtZero: false
     }
   }
 }
