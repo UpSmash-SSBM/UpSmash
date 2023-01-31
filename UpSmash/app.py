@@ -393,7 +393,7 @@ def rank_post(player_id):
     return curr_rating
 
     
-@app.route('/user/<player_id>', methods=['POST'])
+@app.route('/user/<player_id>', methods=['GET'])
 def user(player_id):
     if '-' in player_id: #is a tag
         possible_connect_code = player_id.replace("-","#").upper()

@@ -43,7 +43,7 @@ const createWindow = () => {
 app.on('ready', createWindow) ;
 
 ipcMain.on('fileList', function(e, item){
-  fileSubmit(item)
+  // fileSubmit(item)
 });
 
 
@@ -69,6 +69,7 @@ ipcMain.on('parentPath', function(e, item) {
     console.log('ADDED')
   })
   .on('change', (path) => {
+    console.log(`Getting file: ${path}`);
     // Date time of game start
     const start = Date.now();
     // init the variables we need 
@@ -77,7 +78,6 @@ ipcMain.on('parentPath', function(e, item) {
       // create the game if it doesn't exist
       let game = _.get(gameByPath, [path, "game"]);
       if (!game) {
-        console.log(`New file at: ${path}`);
         // Make sure to enable `processOnTheFly` to get updated stats as the game progresses
         game = new SlippiGame(path, { processOnTheFly: true });
         gameByPath[path] = {
@@ -94,8 +94,8 @@ ipcMain.on('parentPath', function(e, item) {
       latestFrame = game.getLatestFrame();
       gameEnd = game.getGameEnd();
       metadata = game.getMetadata();
-      p0 = metadata['players'][0]['names']['code']
-      p1 = metadata['players'][1]['names']['code']
+      p0 = settings['players'][0]['connectCode']
+      p1 = settings['players'][1]['connectCode']
     } catch (err) {
       console.log(err);
       return;
@@ -105,22 +105,11 @@ ipcMain.on('parentPath', function(e, item) {
       console.log(settings);
       gameState.settings = settings;
     }
-    //console.log(`We have ${_.size(frames)} frames.`);
-    //_.forEach(settings.players, (player) => {
-    //  const frameData = _.get(latestFrame, ["players", player.playerIndex]);
-    // if (!frameData) {
-    //    return;
-    //  }
-
-    //  console.log(
-    //    `[Port ${player.port}] ${frameData.post.percent.toFixed(1)}% | ` + `${frameData.post.stocksRemaining} stocks`,
-    //  );
-    });
     const matchInfo = settings?.matchInfo;
     const matchSub = matchInfo.split('.')[1];
     const matchType = matchSub.split('-')[0];
-    if (matchType == 'ranked') {
-      console.log('this is a ranked game')
+    if (true || matchType == 'ranked') {
+      console.log(gameEnd)
       // gameEnd will be null until the game is over 
       if (gameEnd) {
         fileList.push(path);
@@ -134,6 +123,18 @@ ipcMain.on('parentPath', function(e, item) {
       }
     }  
     console.log(`Read took: ${Date.now() - start} ms`);
+    //console.log(`We have ${_.size(frames)} frames.`);
+    //_.forEach(settings.players, (player) => {
+    //  const frameData = _.get(latestFrame, ["players", player.playerIndex]);
+    // if (!frameData) {
+    //    return;
+    //  }
+
+    //  console.log(
+    //    `[Port ${player.port}] ${frameData.post.percent.toFixed(1)}% | ` + `${frameData.post.stocksRemaining} stocks`,
+    //  );
+    });
+    
   });
 
 //calls api for uploading files
