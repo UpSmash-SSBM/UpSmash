@@ -94,24 +94,26 @@ ipcMain.on('parentPath', function(e, item) {
       latestFrame = game.getLatestFrame();
       gameEnd = game.getGameEnd();
       metadata = game.getMetadata();
-      p0 = settings['players'][0]['connectCode']
-      p1 = settings['players'][1]['connectCode']
     } catch (err) {
       console.log(err);
       return;
     }
+    const matchInfo = settings?.matchInfo;
+    const matchId = matchInfo.matchId;
+    const matchSub = matchId.split('.')[1];
+    const matchType = matchSub.split('-')[0];
     if (!gameState.settings && settings) {
       console.log(`[Game Start] New game has started`);
       console.log(settings);
       gameState.settings = settings;
     }
-    const matchInfo = settings?.matchInfo;
-    const matchSub = matchInfo.split('.')[1];
-    const matchType = matchSub.split('-')[0];
     if (true || matchType == 'ranked') {
       console.log(gameEnd)
       // gameEnd will be null until the game is over 
       if (gameEnd) {
+        console.log('ITS ALLLL OVER')
+        p0 = settings['players'][0]['connectCode']
+        p1 = settings['players'][1]['connectCode']
         fileList.push(path);
         p0_rank = rank_Post(p0);
         p1_rank = rank_Post(p1);

@@ -379,7 +379,9 @@ def page_not_found(e):
     return render_template('404.html.j2'), 404
 
 @app.route('/rank_post', methods=['POST'])
-def rank_post(player_id):
+def rank_post():
+    print(request)
+    request.form['data']
     if '-' in player_id: #is a tag
         possible_connect_code = player_id.replace("-","#").upper()
         current_player = Player.query.filter_by(connect_code=possible_connect_code).first()
