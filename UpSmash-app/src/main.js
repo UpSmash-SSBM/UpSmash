@@ -8,11 +8,14 @@ const chokidar = require('chokidar');
 const { SlippiGame } = require("@slippi/slippi-js");
 const _ = require("lodash");
 
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 //if (require('electron-squirrel-startup')) {
 //  app.quit();
 //}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const createWindow = () => {
   // Create the browser window.
@@ -46,7 +49,6 @@ ipcMain.on('fileList', function(e, item){
   // fileSubmit(item)
 });
 
-
 ipcMain.on('parentPath', function(e, item) {  
   const watcher = chokidar.watch(item, {
     ignored: '/*.slp', // TODO: This doesn't work. Use regex?
@@ -57,84 +59,86 @@ ipcMain.on('parentPath', function(e, item) {
   });
   const gameByPath = {};
   let fileList = new Array();
+  let player_wins = [0, 0, 0, 0] //Need to reset this when you play a new player
   watcher
-  .on('addDir', path => console.log(`Directory ${path} has been added`))
-  .on('unlinkDir', path => console.log(`Directory ${path} has been removed`))
-  .on('error', error => console.log(`Watcher error: ${error}`))
-  .on('unlink', path => console.log(`File ${path} has been removed`))
-  .on('ready', function() {
-    console.log('Initial scan complete. Ready for changes')
-  })
-  .on('add', function(path) { 
-    console.log('ADDED')
-  })
-  .on('change', (path) => {
-    console.log(`Getting file: ${path}`);
-    // Date time of game start
-    const start = Date.now();
-    // init the variables we need 
-    let gameState, settings, stats, frames, latestFrame, gameEnd;
-    try {
-      // create the game if it doesn't exist
-      let game = _.get(gameByPath, [path, "game"]);
-      if (!game) {
-        // Make sure to enable `processOnTheFly` to get updated stats as the game progresses
-        game = new SlippiGame(path, { processOnTheFly: true });
-        gameByPath[path] = {
-          game: game,
-          state: {
-            settings: null,
-            detectedPunishes: {},
-          },
-        };
+    .on('ready', function() {
+      console.log('Initial scan complete. Ready for changes')
+    })
+    .on('add', function(path) { 
+      console.log('ADDED')
+    })
+    .on('change', (path) => {
+      // console.log(`Getting file: ${path}`);
+      // Date time of game start
+      // const start = Date.now();
+      let gameState, settings, stats, frames, latestFrame, gameEnd;
+      try {
+        // create the game if it doesn't exist
+        let game = _.get(gameByPath, [path, "game"]); //Confused on this, is it trying to create an empty file if it doesnt exist?
+        if (!game) {
+          // Make sure to enable `processOnTheFly` to get updated stats as the game progresses
+          game = new SlippiGame(path, { processOnTheFly: true });
+          gameByPath[path] = {
+            game: game,
+            state: {
+              settings: null,
+              detectedPunishes: {},
+            },
+          };
+        }
+        gameState = _.get(gameByPath, [path, "state"]);
+        settings = game.getSettings();
+        frames = game.getFrames();
+        latestFrame = game.getLatestFrame();
+        gameEnd = game.getGameEnd();
+        metadata = game.getMetadata();
+      } catch (err) {
+        console.log(err);
+        return;
       }
-      gameState = _.get(gameByPath, [path, "state"]);
-      settings = game.getSettings();
-      frames = game.getFrames();
-      latestFrame = game.getLatestFrame();
-      gameEnd = game.getGameEnd();
-      metadata = game.getMetadata();
-    } catch (err) {
-      console.log(err);
-      return;
-    }
-    const matchInfo = settings?.matchInfo;
-    const matchId = matchInfo.matchId;
-    const matchSub = matchId.split('.')[1];
-    const matchType = matchSub.split('-')[0];
-    if (!gameState.settings && settings) {
-      console.log(`[Game Start] New game has started`);
-      console.log(settings);
-      gameState.settings = settings;
-    }
-    if (true || matchType == 'ranked') {
-      console.log(gameEnd)
-      // gameEnd will be null until the game is over 
-      if (gameEnd) {
-        console.log('ITS ALLLL OVER')
-        p0 = settings['players'][0]['connectCode']
-        p1 = settings['players'][1]['connectCode']
-        fileList.push(path);
-        p0_rank = rank_Post(p0);
-        p1_rank = rank_Post(p1);
-        console.log(p0_rank);
-        console.log(p1_rank);
-        if (fileList.length == 10) {
-          fileSubmit(fileList);
-        };
+      const matchId = settings['matchInfo']['matchId'];
+      const matchSub = matchId.split('.')[1];
+      const matchType = matchSub.split('-')[0];
+      if (!gameState.settings && settings) {
+        console.log("[Game Start] New game has started");
+        //console.log(settings);
+        gameState.settings = settings;
       }
-    }  
-    console.log(`Read took: ${Date.now() - start} ms`);
-    //console.log(`We have ${_.size(frames)} frames.`);
-    //_.forEach(settings.players, (player) => {
-    //  const frameData = _.get(latestFrame, ["players", player.playerIndex]);
-    // if (!frameData) {
-    //    return;
-    //  }
+      if (true || matchType == 'ranked') {
+        // console.log(gameEnd)
+        // gameEnd will be null until the game is over 
+        if (gameEnd) {
+          console.log('ITS ALLLL OVER')
+          // console.log(gameEnd)
+          players = settings['players']
+          for (let i = 0; i < players.length; i++) {
+            player_wins[i] += gameEnd['placements'][i]['position']
+            if (player_wins[i] >= 2) {
+              player_wins = [0, 0, 0, 0]
+              for (let i = 0; i < players.length; i++) {
+                rating(players[i]['connectCode'])
+              }
+            }
+          }
+          
+          console.log(player_wins)
+          fileList.push(path);
+          if (fileList.length == 10) {
+            fileSubmit(fileList);
+          };
+        }
+      }
+      //console.log(`Read took: ${Date.now() - start} ms`);
+      //console.log(`We have ${_.size(frames)} frames.`);
+      //_.forEach(settings.players, (player) => {
+      //  const frameData = _.get(latestFrame, ["players", player.playerIndex]);
+      // if (!frameData) {
+      //    return;
+      //  }
 
-    //  console.log(
-    //    `[Port ${player.port}] ${frameData.post.percent.toFixed(1)}% | ` + `${frameData.post.stocksRemaining} stocks`,
-    //  );
+      //  console.log(
+      //    `[Port ${player.port}] ${frameData.post.percent.toFixed(1)}% | ` + `${frameData.post.stocksRemaining} stocks`,
+      //  );
     });
     
   });
@@ -199,33 +203,35 @@ function fileSubmit (item) {
   };
 }
 
-//Calls api for updating rank
-const Rankoptions = {
-  hostname:'localhost',
-  port: '5000',
-  path: '/rank_post',
-  method: 'POST'
-};
-
-function rank_Post(connect_code) {
+async function rating(connect_code) {
+  await sleep(5000);
   // this guy is going to actually tell the server to get new rank when its called
   // just submit the new file, and then update the rank server side, don't parse locally
-  const req = request(Rankoptions, (response) => {
+  const rank_options = {
+    hostname:'localhost',
+    port: '5000',
+    path: '/rating/' + connect_code.replace('#','-'),
+    method: 'GET'
+  };
+
+  const req = request(rank_options, (response) => {
     response.setEncoding('utf8');
     console.log(response.statusCode);
     // catches the servers response and prints it
-    response.on('data', (chunk) => {
-      console.log(chunk)
-      return chunk
+    response.on('data', (rating_response) => {
+      if (response.statusCode == 200) {
+        console.log(rating_response);
+      }
     });
     // if the response is over, writes it also
     response.on('end', () => {
-      console.log('No more data in response.');
+      //console.log('No more data in response.');
     });
   });
 // error processing
   req.on('error', (err) => {
-    console.log(err);
+    console.log(response.statusCode);
+    //console.log(err);
   });
   // send the actual data
   req.write(connect_code);

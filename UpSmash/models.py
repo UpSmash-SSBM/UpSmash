@@ -44,6 +44,17 @@ class PlayerRating(db.Model):
 
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+    
+    def __str__(self):
+        return f'{self.id},{self.rating},{self.datetime}'
+
+    def toJSON(self):
+        rating_dict = {
+            "id": self.id,
+            "rating": self.rating,
+            "datetime": self.datetime
+        }
+        return rating_dict
 
 class Player(db.Model):
     """A slippi replay"""
@@ -55,7 +66,6 @@ class Player(db.Model):
     current_rating = db.Column(db.Float)
     ranked_wins = db.Column(db.Integer)
     ranked_losses = db.Column(db.Integer)
-    #character = db.Column(db.Integer)
 
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
@@ -85,6 +95,12 @@ class SlippiReplay(db.Model):
         elif player_number == 2:
             overall = SlippiOverall.query.filter_by(slippi_replay_id=self.id,player_id=self.player2_id).first()
         return overall
+
+    def get_main_player(self, id):
+        if self.player1.id == id:
+            return [player1, player2]
+        else:
+            return [player2, player1]
 
     def get_action_count(self, player_number):
         if player_number == 1:

@@ -85,6 +85,7 @@ def get_slippi_info(connect_code):
 def create_new_player(connect_code):
     player_info = get_slippi_info(connect_code)
     if not player_info:
+        print("Couldn't find slippi player")
         return False
     #print(player_info)
     ranked_info = player_info["rankedNetplayProfile"]
@@ -266,19 +267,14 @@ def get_top_50_players():
     driver.close()
     return top_50_players
 
-def upload():
-    if request.method == 'POST':
-        files = request.files
-        #print("Number of files: " + str(len(files.keys())))
-        start_time = time.time()
-        for new_file in files.values():
-            filename = new_file.filename
-            new_file.save(os.path.join('static/files/', filename))
-            #load_slippi_files(filename)
-            proc = Process(target=load_slippi_files, args=(filename,))
-            proc.start()
-        #print("--- %s seconds ---" % (time.time() - start_time))
-        #print(f.filename)
+def upload(request):
+    files = request.files
+    for new_file in files.values():
+        filename = new_file.filename
+        new_file.save(os.path.join('static/files/', filename))
+        #load_slippi_files(filename)
+        proc = Process(target=load_slippi_files, args=(filename,))
+        proc.start()
     return 'upload template'
 
 if not os.path.exists('db.sqlite3'):
@@ -288,10 +284,11 @@ if not os.path.exists('db.sqlite3'):
 
 @app.before_first_request
 def check_refresh_timings():
-    proc = Process(target=top_50_players_thread)
-    proc.start()
-    proc = Process(target=refresh_all_ratings)
-    proc.start()
+    print("Not getting new player ratings")
+    #proc = Process(target=top_50_players_thread)
+    #proc.start()
+    #proc = Process(target=refresh_all_ratings)
+    #proc.start()
 
 @app.route('/', methods=['GET'])
 def index():
@@ -347,6 +344,18 @@ def top_player_graph():
     #print(players_dict)
     return render_template('top_player_graph.html.j2', graph_dates=graph_dates, players_dict=players_dict)
 
+def get_player(player_id):
+    if '-' in player_id: 
+        possible_connect_code = player_id.replace("-","#").upper()
+        current_player = Player.query.filter_by(connect_code=possible_connect_code).first()
+        if not current_player: #if no player exists, try to create 
+            current_player = create_new_player(possible_connect_code)
+        if current_player:
+            return current_player.id
+        else:
+            print("Couldn't find player")
+            return None
+
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html.j2')
@@ -361,7 +370,8 @@ def privacy():
 
 @app.route('/upload_slp', methods=['POST'])
 def upload_slp():
-    return upload()
+    if request.method == 'POST':
+        return upload(request)
 
 @app.route('/user', methods=['POST'])
 def user_redirect():
@@ -378,35 +388,20 @@ def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('404.html.j2'), 404
 
-@app.route('/rank_post', methods=['POST'])
-def rank_post():
-    print(request)
-    request.form['data']
-    if '-' in player_id: #is a tag
-        possible_connect_code = player_id.replace("-","#").upper()
-        current_player = Player.query.filter_by(connect_code=possible_connect_code).first()
-        if not current_player: #if no player exists, try to create 
-            current_player = create_new_player(possible_connect_code)
-        if current_player:
-            player_id = current_player.id
-    player = Player.query.get_or_404(player_id)
+@app.route('/rating/<player_id>', methods=['GET'])
+def rating(player_id):
+    current_player_id = get_player(player_id)
+    player = Player.query.get_or_404(current_player_id)
     refresh_player_rating(player)
-    curr_rating = PlayerRating.query.filter_by(player_id = player_id).order_by(PlayerRating.datetime).first()
-    return curr_rating
+    curr_rating = PlayerRating.query.filter_by(player_id = current_player_id).order_by(PlayerRating.datetime).first()
+    return curr_rating.toJSON()
 
-    
 @app.route('/user/<player_id>', methods=['GET'])
 def user(player_id):
-    if '-' in player_id: #is a tag
-        possible_connect_code = player_id.replace("-","#").upper()
-        current_player = Player.query.filter_by(connect_code=possible_connect_code).first()
-        if not current_player: #if no player exists, try to create 
-            current_player = create_new_player(possible_connect_code)
-        if current_player:
-            player_id = current_player.id
-    player = Player.query.get_or_404(player_id)
+    current_player_id = get_player(player_id)
+    player = Player.query.get_or_404(current_player_id)
     refresh_player_rating(player)
-    player = Player.query.get_or_404(player_id)
+    player = Player.query.get_or_404(current_player_id)
 
     player_ratings = PlayerRating.query.filter_by(player_id=player.id).order_by(PlayerRating.datetime).all() #.limit(10)
     data_items = []

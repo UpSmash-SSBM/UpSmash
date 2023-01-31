@@ -17,29 +17,29 @@
       const electron = require('electron');
       const { ipcRenderer } = electron;
       document.getElementById("slpFolder").addEventListener("change", (event) => {
-      let output = document.getElementById("listing");
-      let item = document.createElement("li");
-      let parent = event.target.files[0].path;
-      let sub = parent.split('\\');
-      let removed = sub.pop();
-      let final = '';
-      for (const subs of sub) {
-        if (final === '') {
-          final = final + subs
-        } else{
-          final = final + '/' + subs;
-        }
-      };
-      item.textContent = final;
-      output.appendChild(item);
-      let fileList = new Array();
-      for (const file of event.target.files) {
-        fileList.push(file.path);
+        let output = document.getElementById("listing");
+        let item = document.createElement("li");
+        let parent = event.target.files[0].path;
+        let sub = parent.split('\\');
+        let removed = sub.pop();
+        let final = '';
+        for (const subs of sub) {
+          if (final === '') {
+            final = final + subs
+          } else{
+            final = final + '/' + subs;
+          }
         };
-      if (fileList.length ==  event.target.files.length) {
-        ipcRenderer.send("fileList", fileList)
-        ipcRenderer.send("parentPath", final)
-      };
+        item.textContent = final;
+        output.appendChild(item);
+        let fileList = new Array();
+        for (const file of event.target.files) {
+          fileList.push(file.path);
+          };
+        if (fileList.length ==  event.target.files.length) {
+          ipcRenderer.send("fileList", fileList)
+          ipcRenderer.send("parentPath", final)
+        };
       }, false);
     </script>
   </body>
