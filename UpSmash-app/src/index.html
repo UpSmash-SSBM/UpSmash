@@ -8,9 +8,9 @@
     <div id ="logo">
       <img id="upSmashLogo" src="../../UpSmash/static/images/UpSmash-02-purple.jpg" alt="UpSmash Logo">
       <div id = "content">
-        <label>Specify Slippi Files (.slp) path: </label>
-        <input type="file" id="slpFolder" name="fileList" webkitdirectory multiple/>
-        <ul id="listing"></ul>
+        <label>Specify Slippi Files (.slp) path, can typically be found at C:Users/'username'/Documents/Slippi/: </label>
+          <input type="file" id="slpFolder" name="fileList" webkitdirectory multiple/>
+          <ul id="listing"></ul>
       </div>
     </div>
     <script>
@@ -18,15 +18,27 @@
       const { ipcRenderer } = electron;
       document.getElementById("slpFolder").addEventListener("change", (event) => {
       let output = document.getElementById("listing");
+      let item = document.createElement("li");
+      let parent = event.target.files[0].path;
+      let sub = parent.split('\\');
+      let removed = sub.pop();
+      let final = '';
+      for (const subs of sub) {
+        if (final === '') {
+          final = final + subs
+        } else{
+          final = final + '/' + subs;
+        }
+      };
+      item.textContent = final;
+      output.appendChild(item);
       let fileList = new Array();
       for (const file of event.target.files) {
         fileList.push(file.path);
-        let item = document.createElement("li");
-        item.textContent = file.webkitRelativePath;
-        output.appendChild(item);
         };
       if (fileList.length ==  event.target.files.length) {
         ipcRenderer.send("fileList", fileList)
+        ipcRenderer.send("parentPath", final)
       };
       }, false);
     </script>

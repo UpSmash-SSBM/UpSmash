@@ -266,6 +266,21 @@ def get_top_50_players():
     driver.close()
     return top_50_players
 
+def upload():
+    if request.method == 'POST':
+        files = request.files
+        #print("Number of files: " + str(len(files.keys())))
+        start_time = time.time()
+        for new_file in files.values():
+            filename = new_file.filename
+            new_file.save(os.path.join('static/files/', filename))
+            #load_slippi_files(filename)
+            proc = Process(target=load_slippi_files, args=(filename,))
+            proc.start()
+        #print("--- %s seconds ---" % (time.time() - start_time))
+        #print(f.filename)
+    return 'upload template'
+
 if not os.path.exists('db.sqlite3'):
     print("Creating new database")
     with app.app_context():
@@ -346,19 +361,7 @@ def privacy():
 
 @app.route('/upload_slp', methods=['POST'])
 def upload_slp():
-    if request.method == 'POST':
-        files = request.files
-        #print("Number of files: " + str(len(files.keys())))
-        start_time = time.time()
-        for new_file in files.values():
-            filename = new_file.filename
-            new_file.save(os.path.join('static/files/', filename))
-            #load_slippi_files(filename)
-            proc = Process(target=load_slippi_files, args=(filename,))
-            proc.start()
-        #print("--- %s seconds ---" % (time.time() - start_time))
-        #print(f.filename)
-    return 'upload template'
+    return upload()
 
 @app.route('/user', methods=['POST'])
 def user_redirect():
@@ -375,7 +378,21 @@ def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('404.html.j2'), 404
 
-@app.route('/user/<player_id>', methods=['GET'])
+@app.route('/rank_post', methods=['POST'])
+def rank_post(player_id):
+    if '-' in player_id: #is a tag
+        possible_connect_code = player_id.replace("-","#").upper()
+        current_player = Player.query.filter_by(connect_code=possible_connect_code).first()
+        if not current_player: #if no player exists, try to create 
+            current_player = create_new_player(possible_connect_code)
+        if current_player:
+            player_id = current_player.id
+    player = Player.query.get_or_404(player_id)
+    refresh_player_rating(player)
+    curr_rating = PlayerRating.query.filter_by(player_id = player_id).order_by(PlayerRating.datetime).first()
+    return curr_rating
+    
+@app.route('/user/<player_id>', methods=['POST'])
 def user(player_id):
     if '-' in player_id: #is a tag
         possible_connect_code = player_id.replace("-","#").upper()
