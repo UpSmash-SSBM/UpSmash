@@ -26,7 +26,7 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 import json
 import os.path
-from sqlalchemy import exc
+from sqlalchemy import exc, or_
 import requests
 import subprocess
 #from player_rating_refresh import PlayerRatingClass
@@ -353,6 +353,10 @@ def get_player(player_id):
         print("Couldn't find player")
         return None
 
+def games_get(player_id):
+    played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== player_id, SlippiReplay.player2_id== player_id))]
+    return played
+
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html.j2')
@@ -369,6 +373,12 @@ def privacy():
 def upload_slp():
     if request.method == 'POST':
         return upload(request)
+
+@app.route('/player_games/<player_id>', methods=['GET'])
+def get_player_games(player_id):
+    current_player_id = get_player(player_id)
+    played = games_get(current_player_id)
+    return played
 
 @app.route('/user', methods=['POST'])
 def user_redirect():
