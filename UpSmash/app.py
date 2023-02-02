@@ -345,16 +345,13 @@ def top_player_graph():
     return render_template('top_player_graph.html.j2', graph_dates=graph_dates, players_dict=players_dict)
 
 def get_player(player_id):
-    if '-' in player_id: 
-        possible_connect_code = player_id.replace("-","#").upper()
-        current_player = Player.query.filter_by(connect_code=possible_connect_code).first()
-        if not current_player: #if no player exists, try to create 
-            current_player = create_new_player(possible_connect_code)
-        if current_player:
-            return current_player.id
-        else:
-            print("Couldn't find player")
-            return None
+    
+    current_player = Player.query.filter_by(id=player_id).first()
+    if current_player:
+        return current_player.id
+    else:
+        print("Couldn't find player")
+        return None
 
 @app.route('/about', methods=['GET'])
 def about():
