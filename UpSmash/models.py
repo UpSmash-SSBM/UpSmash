@@ -44,7 +44,7 @@ class PlayerRating(db.Model):
 
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
-    
+
     def __str__(self):
         return f'{self.id},{self.rating},{self.datetime}'
 
@@ -70,14 +70,25 @@ class Player(db.Model):
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+class SlippiReplayPlayerInfo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    character = db.Column(db.Enum(MeleeCharacters))
+    characterColor = db.Column(db.Integer)
+
 class SlippiReplay(db.Model):
     """A slippi replay"""
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(100), nullable=False)
     player1_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
     player1 = db.relationship("Player", foreign_keys=[player1_id], backref=db.backref("player1_replay", uselist=False))
+    player1_info_id = db.Column(db.Integer, db.ForeignKey("slippiReplayPlayerInfo.id"), nullable=False)
+    player1_info = db.relationship("SlippiReplayPlayerInfo", foreign_keys=[player1_info_id], backref=db.backref("player1_info_replay", uselist=False))
+
     player2_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
     player2 = db.relationship("Player", foreign_keys=[player2_id], backref=db.backref("player2_replay", uselist=False))
+    player2_info_id = db.Column(db.Integer, db.ForeignKey("slippiReplayPlayerInfo.id"), nullable=False)
+    player2_info = db.relationship("SlippiReplayPlayerInfo", foreign_keys=[player2_info_id], backref=db.backref("player2_info_replay", uselist=False))
+
     winner_id = db.Column(db.Integer, db.ForeignKey("player.id"))
     winner = db.relationship("Player", foreign_keys=[winner_id], backref=db.backref("winner_replay", uselist=False))
     datetime = db.Column(db.DateTime)
