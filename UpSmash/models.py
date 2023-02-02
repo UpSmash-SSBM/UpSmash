@@ -104,8 +104,12 @@ class SlippiReplay(db.Model):
             overall = SlippiOverall.query.filter_by(slippi_replay_id=self.id,player_id=self.player2_id).first()
         return overall
 
-    def get_main_player(self, id):
-        if self.player1.id == id:
+    def get_player_overall_ordered(self, id):
+
+        player1 = self.get_overall(1)
+        player2 = self.get_overall(2)
+
+        if player1.player_id == id:
             return [player1, player2]
         else:
             return [player2, player1]
