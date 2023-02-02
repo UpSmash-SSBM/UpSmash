@@ -81,12 +81,12 @@ class SlippiReplay(db.Model):
     filename = db.Column(db.String(100), nullable=False)
     player1_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
     player1 = db.relationship("Player", foreign_keys=[player1_id], backref=db.backref("player1_replay", uselist=False))
-    player1_info_id = db.Column(db.Integer, db.ForeignKey("slippiReplayPlayerInfo.id"), nullable=False)
+    player1_info_id = db.Column(db.Integer, db.ForeignKey("slippi_replay_player_info.id"), nullable=False)
     player1_info = db.relationship("SlippiReplayPlayerInfo", foreign_keys=[player1_info_id], backref=db.backref("player1_info_replay", uselist=False))
 
     player2_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
     player2 = db.relationship("Player", foreign_keys=[player2_id], backref=db.backref("player2_replay", uselist=False))
-    player2_info_id = db.Column(db.Integer, db.ForeignKey("slippiReplayPlayerInfo.id"), nullable=False)
+    player2_info_id = db.Column(db.Integer, db.ForeignKey("slippi_replay_player_info.id"), nullable=False)
     player2_info = db.relationship("SlippiReplayPlayerInfo", foreign_keys=[player2_info_id], backref=db.backref("player2_info_replay", uselist=False))
 
     winner_id = db.Column(db.Integer, db.ForeignKey("player.id"))
