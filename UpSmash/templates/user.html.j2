@@ -33,27 +33,25 @@
         {% if slippi_replays|length %}
           {% for replay in slippi_replays %}
             {% set win = replay.winner_id == player.id %}
-            {% set playerL_overall = replay.get_overall(1) %}
-            {% if playerL_overall.player_id != player.id %}
-              {% set playerR_overall = playerL_overall %}
-              {% set playerL_overall = replay.get_overall(2) %}
-            {% else %}
-              {% set playerR_overall = replay.get_overall(2) %}
-            {% endif %}
+            {% set playersOverall = replay.get_player_overall_ordered(player.id)%}
             <div class="flexbox-item flexbox-item-second" id="test">
               <div class="flexbox-container flexbox-container3">
                 <div class="flexbox-item flexbox-player flexbox-player-left" {% if win %}style="background-color: #59AD1E;"{% else %}style="background-color: #AD1E1E;"{% endif %}>
-                  <h5>{{ playerL_overall.player.username }}</h5>
-                  <p>Kills: {{ playerL_overall.kill_count }}</p>
-                  <p>Openings per Kill: {% if playerL_overall.openings_per_kill is not none %}{{ playerL_overall.openings_per_kill | float | round(1) }}{% endif %}</p>
-                  <p>Damage per Opening: {% if playerL_overall.damage_per_opening is not none %}{{ playerL_overall.damage_per_opening | round(1) }}{% endif %}</p>
+                  <h5>{{ playersOverall[0].player.username }}</h5>
+                  <p>Kills: {{ playersOverall[0].kill_count }}</p>
+                  <p>Openings per Kill: {% if playersOverall[0].openings_per_kill is not none %}{{ playersOverall[0].openings_per_kill | float | round(1) }}{% endif %}</p>
+                  <p>Damage per Opening: {% if playersOverall[0].damage_per_opening is not none %}{{ playersOverall[0].damage_per_opening | round(1) }}{% endif %}</p>
                 </div>
                 <div class="flexbox-item flexbox-player flexbox-player-right" {% if win  %}style="background-color: #59AD1E;"{% else %}style="background-color: #AD1E1E;"{% endif %}>
-                  <h5>{{ playerR_overall.player.username }}</h5>
-                  <p>Kills: {{ playerR_overall.kill_count }}</p>
-                  <p>Openings per Kill: {% if playerR_overall.openings_per_kill is not none %}{{ playerR_overall.openings_per_kill | float | round(1) }}{% endif %}</p>
-                  <p>Damage per Opening: {% if playerR_overall.damage_per_opening is not none %}{{ playerR_overall.damage_per_opening | round(1) }}{% endif %}</p>
+                  <h5>{{ playersOverall[1].player.username }}</h5>
+                  <p>Kills: {{ playersOverall[1].kill_count }}</p>
+                  <p>Openings per Kill: {% if playersOverall[1].openings_per_kill is not none %}{{ playersOverall[1].openings_per_kill | float | round(1) }}{% endif %}</p>
+                  <p>Damage per Opening: {% if playersOverall[1].damage_per_opening is not none %}{{ playersOverall[1].damage_per_opening | round(1) }}{% endif %}</p>
                 </div>
+                <div class="detailPanel">
+                  <button class="detail"></button>
+                </div>
+
               </div>
 
               <div class="flexbox-container" id="matchDetail">
@@ -61,18 +59,18 @@
                 <h5>Game Stats</h5>
                 <div id="detailWrapper">
                   <div class="detail"> Total Inputs: </div>
-                    <div class="stat"> {{playerL_overall.input_counts}} </div>
+                    <div class="stat"> {{playersOverall[0].input_counts}} </div>
                   <div class="detail"> Damage Dealt: </div>
-                    <div class="stat"> {{playerL_overall.total_damage|round(1, 'common')}} </div>
+                    <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>
                   <div class="detail"> Kill Count: </div>
-                    <div class="stat"> {{playerL_overall.kill_count}} </div>
+                    <div class="stat"> {{playersOverall[0].kill_count}} </div>
                   <div class="detail"> Successful Conversions: </div>
-                    <div class="stat"> {{playerL_overall.successful_conversions}} </div>
+                    <div class="stat"> {{playersOverall[0].successful_conversions}} </div>
                   <div class="detail"> Conversion Ratio: </div>
-                    {%set conversionRatio = playerL_overall.successful_conversion_ratio|float * 100%}
+                    {%set conversionRatio = playersOverall[0].successful_conversion_ratio|float * 100%}
                     <div class="stat"> {{conversionRatio |round(2,'common')}}%</div>
                   <div class="detail"> Damage Dealt: </div>
-                    <div class="stat"> {{playerL_overall.total_damage|round(1, 'common')}} </div>
+                    <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>
                 
                 </div>
               

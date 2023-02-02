@@ -345,8 +345,8 @@ def top_player_graph():
     return render_template('top_player_graph.html.j2', graph_dates=graph_dates, players_dict=players_dict)
 
 def get_player(player_id):
-    connect_code = player_id.replace("-","#").upper()
-    current_player = Player.query.filter_by(connect_code=connect_code).first()
+    
+    current_player = Player.query.filter_by(id=player_id).first()
     if current_player:
         return current_player.id
     else:
