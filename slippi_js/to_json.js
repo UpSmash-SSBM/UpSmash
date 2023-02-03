@@ -8,11 +8,9 @@ let output_folder = '../UpSmash/static/json/'
 //let file = "Game_20221201T132125.slp"
 let file = process.argv[2]
 let full_filename = input_folder + file
-let game2 = new SlippiGame('C:\\Users\\Ryan\\Documents\\UpSmash\\UpSmash\\static\\files\\Game_20230131T130658.slp')
 let file_sub = file.substring(0,20);
 var startTime = performance.now()
-
-//const game = new SlippiGame(input_folder + file);
+const game = new SlippiGame(input_folder + file);
 var endTime = performance.now();
 //console.log(`Setup time ${endTime - startTime} milliseconds`);
 const settings = game.getSettings();

@@ -353,13 +353,13 @@ def get_player(player_id):
         return None
 
 def games_get(player_id):
-    player_id = player_id.replace("-","#").upper()
-    print(player_id)
-    current_player = Player.query.filter_by(connect_code=player_id).first()
-    #current_id = get_player(current_player)
-    print(current_player.id)
+    connect_code = player_id.replace("-","#").upper()
+    current_player = Player.query.filter_by(connect_code=connect_code).first()
+    if not current_player:
+        current_player = create_new_player(connect_code)
+    if not current_player:
+        return None
     played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== current_player.id, SlippiReplay.player2_id== current_player.id))]
-    print(played)
     return played
 
 @app.route('/about', methods=['GET'])
