@@ -1,32 +1,16 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options
+from datetime import datetime
+import subprocess
+import os
 from bs4 import BeautifulSoup
 import time
-from datetime import datetime, timedelta
-from operator import itemgetter
+from selenium.webdriver.firefox.options import Options
 import json
-import os.path
-from sqlalchemy import exc
-from app import app, db
-import requests
-import subprocess
-#from player_rating_refresh import PlayerRatingClass
-from models import MeleeCharacters, PlayerRating, Player, SlippiReplay, SlippiActionCounts, SlippiOverall
-
-
-def refresh_player_rating(player, rating=None):
-    if check_if_player_rating_is_current(player):
-        return False
-    if not rating:
-        rating = get_slippi_rating(player.connect_code)
-    player_rating = PlayerRating(player_id=player.id, rating=rating, datetime=datetime.now())
-    player.current_rating = rating
-    db.session.add(player_rating)
-    db.session.commit()
-
-def get_slippi_rating(connect_code):
-    return get_slippi_info(connect_code)["rankedNetplayProfile"]['ratingOrdinal']
+from sqlalchemy import or_
+from selenium import webdriver
+from multiprocessing import Process
+from upsmash.models import Player, SlippiReplay, SlippiActionCounts, SlippiOverall, MeleeCharacters, SlippiReplayPlayerInfo
+from upsmash import db
+from upsmash.utils import create_new_player, refresh_player_rating
 
 def calc_ratio(count):
     total = count['success'] + count['fail']
@@ -35,70 +19,6 @@ def calc_ratio(count):
     else:
         ratio = None
     return ratio
-
-def get_slippi_info(connect_code):
-    connect_code = connect_code.upper()
-    url = "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql"
-    connection_object = {
-        "operationName": "AccountManagementPageQuery",
-        "query": "fragment userProfilePage on User {\n  fbUid\n  displayName\n  connectCode {\n    code\n    __typename\n  }\n  status\n  activeSubscription {\n    level\n    hasGiftSub\n    __typename\n  }\n  rankedNetplayProfile {\n    id\n    ratingOrdinal\n    ratingUpdateCount\n    wins\n    losses\n    dailyGlobalPlacement\n    dailyRegionalPlacement\n    continent\n    characters {\n      id\n      character\n      gameCount\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nquery AccountManagementPageQuery($cc: String!, $uid: String!) {\n  getUser(fbUid: $uid) {\n    ...userProfilePage\n    __typename\n  }\n  getConnectCode(code: $cc) {\n    user {\n      ...userProfilePage\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {"cc": connect_code, "uid": connect_code},
-        "cc":connect_code,
-        "uid":connect_code
-    }
-    response = requests.post(url, json = connection_object)
-    #print(response.text)
-    try:
-        response_json = json.loads(response.text)
-    except:
-        print(response)
-        print(response.text)
-        print("Couldn't find player info for: " + connect_code)
-        return False
-    
-    if not str(response.status_code) == "200":
-        print("Bad response")
-        return False
-    if not response_json['data']['getConnectCode']:
-        print("No user: " + connect_code)
-        return False
-    return response_json["data"]["getConnectCode"]["user"]
-
-def create_new_player(connect_code):
-    player_info = get_slippi_info(connect_code)
-    if not player_info:
-        return False
-    #print(player_info)
-    ranked_info = player_info["rankedNetplayProfile"]
-    rating = ranked_info['ratingOrdinal']
-    wins = ranked_info['wins']
-    losses = ranked_info['losses']
-    region = ranked_info['continent']
-    username = player_info['displayName']
-    char_enum = None
-    if len(ranked_info['characters']) > 0:
-        character_list = sorted(ranked_info['characters'], key=itemgetter('gameCount'), reverse=True)
-        top_character = character_list[0]['character']
-        char_enum = MeleeCharacters[top_character]
-    current_player = Player(connect_code=connect_code.upper(),username=username, region=region, ranked_wins=wins,ranked_losses=losses)
-    if char_enum:
-        current_player.character=char_enum
-    
-    try:
-        db.session.add(current_player)
-        db.session.commit()
-        refresh_player_rating(current_player, rating=rating)
-    except exc.IntegrityError:
-        db.session.rollback()
-    return current_player
-
-def check_if_player_rating_is_current(player):
-    player_rating = PlayerRating.query.filter_by(player_id=player.id).order_by(PlayerRating.datetime.desc()).first()
-    if not player_rating:
-        #print("No ratings")
-        return False
-    time_10_minutes_ago = datetime.now() - timedelta(minutes=10)
-    return player_rating.datetime > time_10_minutes_ago
 
 def add_slippi_file_to_overall(slippi_replay, filename, players, overall):
     for player in overall:
@@ -141,6 +61,17 @@ def add_slippi_file_to_action_counts(slippi_replay, filename, players, action_co
         db.session.add(new_action_count)
         db.session.commit()
 
+def get_player_info(setting_players):
+    new_player_info = []
+    for players in setting_players:
+        player_character = MeleeCharacters[players['characterId']]
+        player_color = players['characterColor']
+        player_info = SlippiReplayPlayerInfo(character=player_character,characterColor=player_color)
+        db.session.add(player_info)
+        db.session.commit()
+        new_player_info.append(player_info)
+    return new_player_info
+
 def load_slippi_file(filename):
     json_folder = 'static/json/'
     full_filename = json_folder + filename + '.json'
@@ -154,12 +85,13 @@ def load_slippi_file(filename):
             print("Couldn't load file: " + filename)
             return False
 
-        #settings = data['settings']
+        settings = data['settings']
         stats = data['stats']
         metadata = data['metadata']
         players = metadata['players']
         winner = data['winner']
         winner_id = None
+        setting_players = settings['players']
 
         new_players = []
         #print("PLAYERS: " + str(players))
@@ -181,10 +113,13 @@ def load_slippi_file(filename):
             new_players.append(current_player)
         #print("PLAYERS: " + str(new_players))
         if not SlippiReplay.query.filter_by(filename=filename,player1_id=new_players[0].id,player2_id=new_players[1].id).first(): #add test to make sure not already exists
+            players_info = get_player_info(setting_players)
+            
             slippi_datetime = filename[5:20]
             slp_datetime = datetime.strptime(slippi_datetime, '%Y%m%dT%H%M%S')
             #print("slippidatetime: " + slippi_datetime)
-            new_slippi_replay = SlippiReplay(filename=filename,player1_id=new_players[0].id,player2_id=new_players[1].id, winner_id=winner_id, datetime=slp_datetime)
+            new_slippi_replay = SlippiReplay(filename=filename,player1_id=new_players[0].id,player2_id=new_players[1].id, winner_id=winner_id, datetime=slp_datetime,player1_info_id=players_info[0].id,player2_info_id=players_info[1].id)
+            
             db.session.add(new_slippi_replay)
             db.session.commit()
             #print("replay_id: " + str(new_slippi_replay.id))
@@ -192,43 +127,35 @@ def load_slippi_file(filename):
             add_slippi_file_to_overall(new_slippi_replay, filename, players, stats['overall'])
 
 def load_slippi_files(filename):
-    with app.app_context():
-        subprocess.run(["node", "../slippi_js/to_json.js",filename])
-        slp_path = os.path.join('static/files/', filename)
-        os.remove(slp_path)
-        base_filename = filename.split('.')[0]
-        load_slippi_file(base_filename)
-        json_path = os.path.join('static/json/', base_filename + '.json')
-        os.remove(json_path)
+    subprocess.run(["node", "../slippi_js/to_json.js",filename])
+    slp_path = os.path.join('static/files/', filename)
+    os.remove(slp_path)
+    base_filename = filename.split('.')[0]
+    load_slippi_file(base_filename)
+    json_path = os.path.join('static/json/', base_filename + '.json')
+    os.remove(json_path)
 
 def refresh_all_ratings():
-    with app.app_context():
-        while True:
-            print("Refreshing all ratings")
-            players = Player.query.all()
-            for player in players:
-                refresh_player_rating(player)
-            time.sleep(3600)
+    print("Refreshing all ratings")
+    players = Player.query.all()
+    for player in players:
+        refresh_player_rating(player)
 
 def top_50_players_thread():
-    with app.app_context():
-        while True:
-            print("Refreshing top 50 players")
-            #players = get_top_50_players()
-            with open('player_list.json') as f:
-                players = json.load(f)
-            #print(players)
-            for player in players:
-                #print(player)
-                connect_code = player[1]
-                current_player = Player.query.filter_by(connect_code=connect_code).first()
-                if not current_player:
-                        current_player = create_new_player(connect_code)
-            time.sleep(43200)
+    print("Refreshing top 50 players")
+    #players = get_top_50_players()
+    with open('player_list.json') as f:
+        players = json.load(f)
+    #print(players)
+    for player in players:
+        #print(player)
+        connect_code = player[1]
+        current_player = Player.query.filter_by(connect_code=connect_code).first()
+        if not current_player:
+                current_player = create_new_player(connect_code)
 
 def get_top_50_players():
     top_50_players = []
-
     url = "https://slippi.gg/leaderboards?region="
     regions = ['na', 'eu', 'other']
     options = Options()
@@ -247,3 +174,18 @@ def get_top_50_players():
             top_50_players.append((player_name, player_tag))
     driver.close()
     return top_50_players
+
+def upload(request):
+    files = request.files
+    for new_file in files.values():
+        filename = new_file.filename
+        new_file.save(os.path.join('static/files/', filename))
+        #load_slippi_files(filename)
+        proc = Process(target=load_slippi_files, args=(filename,))
+        proc.start()
+    return 'upload template'
+
+def games_get(player_id):
+    played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== player_id, SlippiReplay.player2_id== player_id))]
+    return played
+

@@ -1,7 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
+from upsmash import db
 import enum
-
-db = SQLAlchemy()
 
 class MeleeCharacters(enum.Enum):
     CAPTAIN_FALCON = 0
