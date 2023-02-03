@@ -344,8 +344,7 @@ def top_player_graph():
     #print(players_dict)
     return render_template('top_player_graph.html.j2', graph_dates=graph_dates, players_dict=players_dict)
 
-def get_player(player_id):
-    
+def get_player(player_id):    
     current_player = Player.query.filter_by(id=player_id).first()
     if current_player:
         return current_player.id
@@ -354,7 +353,13 @@ def get_player(player_id):
         return None
 
 def games_get(player_id):
-    played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== player_id, SlippiReplay.player2_id== player_id))]
+    player_id = player_id.replace("-","#").upper()
+    print(player_id)
+    current_player = Player.query.filter_by(connect_code=player_id).first()
+    #current_id = get_player(current_player)
+    print(current_player.id)
+    played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== current_player.id, SlippiReplay.player2_id== current_player.id))]
+    print(played)
     return played
 
 @app.route('/about', methods=['GET'])
@@ -376,8 +381,7 @@ def upload_slp():
 
 @app.route('/player_games/<player_id>', methods=['GET'])
 def get_player_games(player_id):
-    current_player_id = get_player(player_id)
-    played = games_get(current_player_id)
+    played = games_get(player_id)
     return played
 
 @app.route('/user', methods=['POST'])

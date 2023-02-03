@@ -27,33 +27,36 @@
           path: '/player_games/' + connect_code.replace('#','-'),
           method: 'GET'
         };
-
-        const req = request(game_options, (response) => {
-          response.setEncoding('utf8');
-          console.log(response.statusCode);
-          // catches the servers response and prints it
-          response.on('data', (game_list) => {
-            //if (response.statusCode == 200) {
-            //  return game_list
-            //}
+        let response = await doRequest(game_options, connect_code)
+        return response
+      }
+      function doRequest(url, connect_code) {
+        return new Promise(function (resolve, rejest) {
+          const req = request(url, (response) => {
+            response.setEncoding('utf8');
+            console.log(response.statusCode);
+            var body = '';
+            // catches the servers response and prints it
+            response.on('data', (game_list) => {
+              body += game_list
+            });
+            // if the response is over, writes it also
+            response.on('end', function() {
+              if (response.statusCode == 200) {
+                resolve(body)
+              }
+            });
           });
-          // if the response is over, writes it also
-          response.end('data', (game_list) => {
-            if (response.statusCode == 200) {
-              return game_list
-            }
-            //console.log('No more data in response.');
+        // error processing
+          req.on('error', (err) => {
+            console.log(response.statusCode);
+            reject(err);
           });
-        });
-      // error processing
-        req.on('error', (err) => {
-          console.log(response.statusCode);
-          //console.log(err);
-        });
-        // send the actual data
-        req.write(connect_code);
-        req.end();
-        };
+          // send the actual data
+          req.write(connect_code);
+          req.end();
+        })
+      };
 
       // listens for a click change
       document.getElementById("slpFolder").addEventListener("change", (event) => {
@@ -78,9 +81,15 @@
         item.textContent = final;
         output.appendChild(item);
         let fileList = new Array();
+        let fileSub = new Array();
         for (const file of event.target.files) {
           fileList.push(file.path);
+          if (file.path.split('.')[file.path.split('.').length - 1] == 'slp') {
+            parent = file.path.split('.')[0, file.path.split('.').length - 2];
+            sub = parent.split('\\')[parent.split('\\').length - 1];
+            fileSub.push(sub)
           };
+        };
         if (fileList.length > 1){
           let g1 = new SlippiGame(fileList[0]);
           let g2 = new SlippiGame(fileList[1]);
@@ -98,20 +107,20 @@
           connect_local = g1_meta['players'][0]['names']['code']
         }
         console.log(connect_local[0])
-        const how_many = games_played(connect_local[0]);
-        console.log(how_many)
-        console.log(fileList)
-        for (const i of Object.entries(how_many)) {
-          console.log(i)
-        }
-        //const to_send = fileList.filter(function(item) {
-        //  return how_many.indexOf(item) == -1;
-        //});
-        console.log(to_send)
-        if (fileList.length ==  event.target.files.length) {
-          ipcRenderer.send("fileList", to_send)
-          ipcRenderer.send("parentPath", final)
-        };
+        let game_list = games_played(connect_local[0]);
+
+        game_list.then((value) => {
+          console.log(fileSub)
+          let to_send = fileSub.filter(function(item) {
+            console.log(value)
+            return value.indexOf(item) == -1;
+          });
+          console.log(to_send)
+          if (fileList.length ==  event.target.files.length) {
+            ipcRenderer.send("fileList", to_send)
+            ipcRenderer.send("parentPath", final)
+          }; 
+        }) 
       }, false);
     </script>
   </body>
