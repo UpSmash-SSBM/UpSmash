@@ -1,5 +1,4 @@
 graphs/
-json/
 *.json
 package-lock.json
 *.db

@@ -68,6 +68,7 @@ ipcMain.on('parentPath', function(e, item) {
       console.log('ADDED')
     })
     .on('change', (path) => {
+      console.log("File change");
       // triggers on file being written to
       // intialize the new variables we need
       let gameState, settings, frames, latestFrame, gameEnd;
@@ -104,8 +105,10 @@ ipcMain.on('parentPath', function(e, item) {
         console.log("[Game Start] New game has started");
         //console.log(settings);
         gameState.settings = settings;
+      } else {
+        console.log("Not a new game");
       }
-      if (true || matchType == 'ranked') {
+      if ( matchType == 'ranked') { 
         console.log(gameEnd)
         // gameEnd will be null until the game is over
         if (gameEnd) {

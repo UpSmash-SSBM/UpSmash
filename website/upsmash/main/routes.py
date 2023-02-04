@@ -4,7 +4,6 @@ from upsmash.models import PlayerRating, Player
 from upsmash.main.utils import upload, games_get, refresh_player_rating
 from upsmash.utils import get_player
 
-
 main = Blueprint('main', __name__)
 
 @main.route('/about', methods=['GET'])

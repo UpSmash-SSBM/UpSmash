@@ -41,14 +41,16 @@ def check_if_player_rating_is_current(player):
     if not player_rating:
         #print("No ratings")
         return False
-    time_10_minutes_ago = datetime.now() - timedelta(minutes=10)
-    return player_rating.datetime > time_10_minutes_ago
+    time_5_minutes_ago = datetime.now() - timedelta(minutes=5)
+    return player_rating.datetime > time_5_minutes_ago
 
 def refresh_player_rating(player, rating=None):
     if check_if_player_rating_is_current(player):
         return False
     if not rating:
         rating = get_slippi_rating(player.connect_code)
+    if rating == player.current_rating: #Don't want to add new datapoint if rating hasn't changed
+        return False
     player_rating = PlayerRating(player_id=player.id, rating=rating, datetime=datetime.now())
     player.current_rating = rating
     db.session.add(player_rating)

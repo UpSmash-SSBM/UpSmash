@@ -11,6 +11,10 @@ from multiprocessing import Process
 from upsmash.models import Player, SlippiReplay, SlippiActionCounts, SlippiOverall, MeleeCharacters, SlippiReplayPlayerInfo
 from upsmash import db
 from upsmash.utils import create_new_player, refresh_player_rating
+from upsmash import create_min_app
+
+app = create_min_app()
+app.app_context().push()
 
 def calc_ratio(count):
     total = count['success'] + count['fail']
@@ -64,7 +68,7 @@ def add_slippi_file_to_action_counts(slippi_replay, filename, players, action_co
 def get_player_info(setting_players):
     new_player_info = []
     for players in setting_players:
-        player_character = MeleeCharacters[players['characterId']]
+        player_character = MeleeCharacters(players['characterId'])
         player_color = players['characterColor']
         player_info = SlippiReplayPlayerInfo(character=player_character,characterColor=player_color)
         db.session.add(player_info)
@@ -73,8 +77,7 @@ def get_player_info(setting_players):
     return new_player_info
 
 def load_slippi_file(filename):
-    json_folder = 'static/json/'
-    full_filename = json_folder + filename + '.json'
+    full_filename = os.path.join('upsmash/static/json/', filename + '.json')
     if not os.path.exists(full_filename):
         print("Slp file does not exist")
         return False
@@ -128,11 +131,11 @@ def load_slippi_file(filename):
 
 def load_slippi_files(filename):
     subprocess.run(["node", "../slippi_js/to_json.js",filename])
-    slp_path = os.path.join('static/files/', filename)
+    slp_path = os.path.join('upsmash/static/files/', filename)
     os.remove(slp_path)
     base_filename = filename.split('.')[0]
     load_slippi_file(base_filename)
-    json_path = os.path.join('static/json/', base_filename + '.json')
+    json_path = os.path.join('upsmash/static/json/', base_filename + '.json')
     os.remove(json_path)
 
 def refresh_all_ratings():
@@ -179,7 +182,7 @@ def upload(request):
     files = request.files
     for new_file in files.values():
         filename = new_file.filename
-        new_file.save(os.path.join('static/files/', filename))
+        new_file.save(os.path.join('upsmash/static/files/', filename))
         #load_slippi_files(filename)
         proc = Process(target=load_slippi_files, args=(filename,))
         proc.start()
@@ -188,4 +191,3 @@ def upload(request):
 def games_get(player_id):
     played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== player_id, SlippiReplay.player2_id== player_id))]
     return played
-

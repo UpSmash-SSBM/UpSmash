@@ -98,5 +98,5 @@ const datapoints = [
       {% endfor %}
 ];
 </script>
-<script src="../static/js/elo_graph.js"></script>
+<script src="{{ url_for('static', filename='js/elo_graph.js/') }}"></script>
 {% endblock %}
