@@ -28,6 +28,20 @@ def user(connect_code):
     wins = SlippiReplay.query.filter_by(winner_id=player.id).count()
     losses = total_games - wins
     slippi_replays = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).order_by(SlippiReplay.datetime).limit(20)
+    games = [
+        {
+            'name': 'ranked',
+            'games': slippi_replays
+        },
+        {
+            'name': 'unranked',
+            'games': None
+        },
+        {
+            'name': 'direct',
+            'games': None
+        },
+    ]
     context = {
         "player_ratings": player_ratings,
         "player": player,
@@ -36,6 +50,7 @@ def user(connect_code):
         "total_games": total_games,
         "wins": wins,
         "losses": losses,
+        "games": games,
         "slippi_replays": list(slippi_replays),
     }
     return render_template('user.html.j2', **context)

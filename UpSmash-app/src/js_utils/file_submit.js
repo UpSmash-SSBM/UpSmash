@@ -8,8 +8,10 @@ const SLPoptions = {
     port: '5000',
     path: '/upload_slp',
     method: 'POST'
-  };
+};
 
+// this function submits a list of local files in batches of 10
+// any leftovers are submitted after
 async function file_submit (item) {
     var batch = 11;
     var form = new FormData();

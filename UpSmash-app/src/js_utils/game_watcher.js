@@ -8,6 +8,41 @@ const slippi_game_end_types = {
     7: "No Contest",
 };
 
+async function rating(connect_code) {
+    await sleep(5000);
+    // this guy is going to actually tell the server to get new rank when its called
+    // just submit the new file, and then update the rank server side, don't parse locally
+    const rank_options = {
+      hostname:'localhost',
+      port: '5000',
+      path: '/rating/' + connect_code.replace('#','-'),
+      method: 'GET'
+    };
+  
+    const req = request(rank_options, (response) => {
+      response.setEncoding('utf8');
+      console.log(response.statusCode);
+      // catches the servers response and prints it
+      response.on('data', (rating_response) => {
+        if (response.statusCode == 200) {
+          console.log(rating_response);
+        }
+      });
+      // if the response is over, writes it also
+      response.on('end', () => {
+        //console.log('No more data in response.');
+      });
+    });
+    // error processing
+    req.on('error', (err) => {
+      console.log(response.statusCode);
+      //console.log(err);
+    });
+    // send the actual data
+    req.write(connect_code);
+    req.end();
+}
+
 function file_change_handler(path) {
     // triggers on file being written to
     // console.log("File change");
