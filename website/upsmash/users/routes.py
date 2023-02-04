@@ -1,27 +1,9 @@
-from upsmash.utils import create_new_player, get_player, refresh_player_rating
-from flask import render_template, redirect, request, Blueprint, abort
+from upsmash.utils import refresh_player_rating
+from flask import render_template, redirect, request, Blueprint
 from upsmash.models import PlayerRating, Player, SlippiReplay
+from upsmash.users.utils import get_player_or_abort, get_safe_connect_code, get_real_connect_code
 
 users = Blueprint('users', __name__)
-
-def get_safe_connect_code(connect_code):
-    return connect_code.replace("#","-").upper()
-
-def get_real_connect_code(connect_code):
-    return connect_code.replace("-","#").upper()
-
-def get_or_create_player(connect_code):
-    connect_code = get_real_connect_code(connect_code)
-    current_player = Player.query.filter_by(connect_code=connect_code).first()
-    if not current_player:
-        current_player = create_new_player(connect_code)
-    return current_player
-
-def get_player_or_abort(connect_code):
-    player = get_or_create_player(connect_code)
-    if not player:
-        abort(404)
-    return player
     
 @users.route('/user', methods=['POST'])
 def user_redirect():
