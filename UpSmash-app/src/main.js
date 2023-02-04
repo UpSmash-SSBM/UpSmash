@@ -1,26 +1,8 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
-const fs = require('fs');
 const { request } = require('http');
-const FormData = require('form-data');
-const { formatWithOptions } = require('util');
-const chokidar = require('chokidar');
-const { SlippiGame } = require("@slippi/slippi-js");
-const _ = require("lodash");
-
-const slippi_game_end_types = {
-  1: "TIME!",
-  2: "GAME!",
-  7: "No Contest",
-};
-
-//calls api for uploading files
-const SLPoptions = {
-  hostname:'localhost',
-  port: '5000',
-  path: '/upload_slp',
-  method: 'POST'
-};
+const { game_checker } = require('./js_utils/game_watcher');
+const { file_submit } = require('./js_utils/file_submit');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 //if (require('electron-squirrel-startup')) {
@@ -60,132 +42,17 @@ const createWindow = () => {
 app.on('ready', createWindow) ;
 
 ipcMain.on('fileList', function(e, item){
-  fileSubmit(item)
+  file_submit(item)
 });
 
 ipcMain.on('parentPath', function(e, item) {  
-  const watcher = chokidar.watch(item, {
-    ignored: '/*.slp', // TODO: This doesn't work. Use regex?
-    depth: 0,
-    persistent: true,
-    usePolling: true,
-    ignoreInitial: true,
-  });
-  let current_game_path = "";
-  let fileList = new Array();
-  let player_wins = [0, 0, 0, 0] //Need to reset this when you play a new player
-  watcher
-    .on('ready', function() {
-      console.log('Initial scan complete. Ready for changes')
-    })
-    .on('add', function(path) { 
-      console.log('ADDED')
-    })
-    .on('change', (path) => {
-      // triggers on file being written to
-      console.log("File change");
-      if (current_game_path != path) {
-        current_game_path = path;
-        console.log("New game");
-      }
-      
-      try {
-        // create the game if it doesn't exist
-        game = new SlippiGame(path, { processOnTheFly: true });
-      } catch (err) {
-        console.log(err);
-        return;
-      }
-      let settings, frames, latestFrame, gameEnd;
-      settings = game.getSettings();
-      frames = game.getFrames();
-      latestFrame = game.getLatestFrame();
-      gameEnd = game.getGameEnd();
-
-      let matchId = settings['matchInfo']['matchId'];
-      let matchSub = matchId.split('.')[1];
-      let matchType = matchSub.split('-')[0];
-      if (true || matchType == 'ranked') { 
-        // gameEnd will be null until the game is over
-        if (gameEnd) {
-          console.log(gameEnd)
-          const endMessage = _.get(slippi_game_end_types, gameEnd.gameEndMethod) || "Unknown";
-          const lrasText = gameEnd.gameEndMethod === 7 ? ` | Quitter Index: ${gameEnd.lrasInitiatorIndex}` : "";
-          console.log(`[Game Complete] Type: ${endMessage}${lrasText}`)
-          // console.log(gameEnd)
-          players = settings['players']
-          for (let i = 0; i < players.length; i++) {
-            player_wins[i] += gameEnd['placements'][i]['position']
-            if (player_wins[i] >= 0) {
-              player_wins = [0, 0, 0, 0]
-              for (let i = 0; i < players.length; i++) {
-                rating(players[i]['connectCode'])
-              }
-            }
-          }
-          console.log(player_wins)
-          fileList.push(path);
-          if (fileList.length == 10) {
-            fileSubmit(fileList);
-          };
-        }
-      }
-    });
-  });
-
+  console.log("check game before")
+  game_checker(item)
+  console.log("check game after")
+});
 
 // this function submits a list of local files in batches of 10
 // any leftovers are submitted after
-
-async function fileSubmit (item) {
-  var batch = 11;
-  var form = new FormData();
-  for (files in item) {
-    const readStream = fs.createReadStream(item[files]);
-    form.append(readStream['path'].split('\\')[readStream['path'].split('\\').length - 1], readStream);
-    SLPoptions['headers'] = form.getHeaders();
-    // now make the request to the server if 10 files exist
-    if (files % batch == 0 && files != 0) {
-      const req = request(SLPoptions, (response) => {
-        response.setEncoding('utf8');
-        console.log(response.statusCode);
-        response.on('end', () => {
-          console.log('No more data in response.');
-        });
-        req.end();
-      });
-      req.on('error', (err) => {
-        console.log(err);
-      });
-      form.pipe(req);
-      var form = new FormData();
-    } else if ((item.length - files) < batch) {
-      const sub_list = item.slice(files);
-      const form = new FormData();
-      for (sub_files in sub_list){
-        const readStream = fs.createReadStream(sub_list[sub_files]);
-        form.append(readStream['path'].split('\\')[readStream['path'].split('\\').length - 1], readStream);
-        SLPoptions['headers'] = form.getHeaders();
-        };
-      const req = request(SLPoptions, (response) => {
-        response.setEncoding('utf8');
-        console.log(response.statusCode);
-        response.on('data', (chunk) => {
-          console.log(chunk)
-        });
-        response.on('end', () => {
-          console.log('No more data in response.');
-        });
-        req.end();
-      });
-      req.on('error', (err) => {
-        console.log(err);
-      });
-      form.pipe(req);
-      break
-    }
-  };
-}
 
 async function rating(connect_code) {
   await sleep(5000);

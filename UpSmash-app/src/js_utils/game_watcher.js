@@ -1,0 +1,84 @@
+const chokidar = require('chokidar');
+const { SlippiGame } = require("@slippi/slippi-js");
+const _ = require("lodash");
+
+const slippi_game_end_types = {
+    1: "TIME!",
+    2: "GAME!",
+    7: "No Contest",
+};
+
+function file_change_handler(path) {
+    // triggers on file being written to
+    // console.log("File change");
+    try {
+        // create the game if it doesn't exist
+        game = new SlippiGame(path, { processOnTheFly: true });
+    } catch (err) {
+        console.log(err);
+        return;
+    }
+    let settings, frames, latestFrame, gameEnd;
+    settings = game.getSettings();
+    frames = game.getFrames();
+    latestFrame = game.getLatestFrame();
+    gameEnd = game.getGameEnd();
+
+    let matchId = settings['matchInfo']['matchId'];
+    let matchSub = matchId.split('.')[1];
+    let matchType = matchSub.split('-')[0];
+    if (true || matchType == 'ranked') { 
+        // gameEnd will be null until the game is over
+        if (gameEnd) {
+            console.log(gameEnd)
+            const endMessage = _.get(slippi_game_end_types, gameEnd.gameEndMethod) || "Unknown";
+            const lrasText = gameEnd.gameEndMethod === 7 ? ` | Quitter Index: ${gameEnd.lrasInitiatorIndex}` : "";
+            console.log(`[Game Complete] Type: ${endMessage}${lrasText}`)
+            // console.log(gameEnd)
+            players = settings['players']
+            for (let i = 0; i < players.length; i++) {
+            player_wins[i] += gameEnd['placements'][i]['position']
+            if (player_wins[i] >= 0) {
+                player_wins = [0, 0, 0, 0]
+                for (let i = 0; i < players.length; i++) {
+                rating(players[i]['connectCode'])
+                }
+            }
+            }
+            console.log(player_wins)
+            fileList.push(path);
+            if (fileList.length == 10) {
+            fileSubmit(fileList);
+            };
+        }
+    }
+}
+
+function game_checker(item) {
+    const watcher = chokidar.watch(item, {
+        ignored: '/*.slp', // TODO: This doesn't work. Use regex?
+        depth: 0,
+        persistent: true,
+        usePolling: true,
+        ignoreInitial: true,
+    });
+    let current_game_path = "";
+    let fileList = new Array();
+    let player_wins = [0, 0, 0, 0] //Need to reset this when you play a new player
+    watcher
+    .on('ready', function() {
+        console.log('Initial scan complete. Ready for changes')
+    })
+    .on('add', function(path) { 
+        console.log('ADDED')
+    })
+    .on('change', (path) => {
+        if (current_game_path != path) {
+            current_game_path = path;
+            console.log("New game");
+        }
+        file_change_handler(path)
+    });
+}
+
+module.exports = { game_checker };
