@@ -4,22 +4,36 @@ from upsmash.models import PlayerRating, Player, SlippiReplay
 
 users = Blueprint('users', __name__)
 
-@users.route('/user', methods=['POST'])
-def user_redirect():
-    connect_code = request.form['connect_code'].replace("-","#").upper()
+def get_safe_connect_code(connect_code):
+    return connect_code.replace("#","-").upper()
+
+def get_real_connect_code(connect_code):
+    return connect_code.replace("-","#").upper()
+
+def get_or_create_player(connect_code):
+    connect_code = get_real_connect_code(connect_code)
     current_player = Player.query.filter_by(connect_code=connect_code).first()
     if not current_player:
         current_player = create_new_player(connect_code)
-    if not current_player:
-        abort(404)
-    return redirect('/user/' + str(current_player.id))
+    return current_player
 
-@users.route('/user/<player_id>', methods=['GET'])
-def user(player_id):
-    current_player_id = get_player(player_id)
-    player = Player.query.get_or_404(current_player_id)
+def get_player_or_abort(connect_code):
+    player = get_or_create_player(connect_code)
+    if not player:
+        abort(404)
+    return player
+    
+@users.route('/user', methods=['POST'])
+def user_redirect():
+    current_player = get_player_or_abort(request.form['connect_code'])
+    return redirect('/user/' + str(get_safe_connect_code(current_player.connect_code)))
+
+@users.route('/user/<connect_code>', methods=['GET'])
+def user(connect_code):
+    connect_code = get_real_connect_code(connect_code)
+    player = get_player_or_abort(connect_code)
     refresh_player_rating(player)
-    player = Player.query.get_or_404(current_player_id)
+    player = Player.query.filter_by(connect_code=connect_code).first()
 
     player_ratings = PlayerRating.query.filter_by(player_id=player.id).order_by(PlayerRating.datetime).all() #.limit(10)
     data_items = []

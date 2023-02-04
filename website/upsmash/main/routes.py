@@ -36,12 +36,6 @@ def upload_slp():
     if request.method == 'POST':
         return upload(request)
 
-@main.route('/player_games/<player_id>', methods=['GET'])
-def get_player_games(player_id):
-    current_player_id = get_player(player_id)
-    played = games_get(current_player_id)
-    return played
-
 @main.route('/top_player_graph', methods=['GET'])
 def top_player_graph():
     tomorrow = date.today() + timedelta(days=1)
@@ -83,11 +77,14 @@ def top_player_graph():
     #print(players_dict)
     return render_template('top_player_graph.html.j2', graph_dates=graph_dates, players_dict=players_dict)
 
-
-@main.route('/rating/<player_id>', methods=['GET'])
-def rating(player_id):
-    current_player_id = get_player(player_id)
-    player = Player.query.get_or_404(current_player_id)
+@main.route('/rating/<connect_code>', methods=['GET'])
+def rating(connect_code):
+    player = Player.query.get_or_404(connect_code=connect_code)
     refresh_player_rating(player)
-    curr_rating = PlayerRating.query.filter_by(player_id = current_player_id).order_by(PlayerRating.datetime).first()
+    curr_rating = PlayerRating.query.filter_by(player_id=player.id).order_by(PlayerRating.datetime).first()
     return curr_rating.toJSON()
+
+@main.route('/player_games/<connect_code>', methods=['GET'])
+def get_player_games(connect_code):
+    played = games_get(connect_code)
+    return played

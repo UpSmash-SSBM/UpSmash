@@ -16,6 +16,16 @@ from upsmash import create_min_app
 app = create_min_app()
 app.app_context().push()
 
+def games_get(connect_code):
+    connect_code = connect_code.replace("-","#").upper()
+    current_player = Player.query.filter_by(connect_code=connect_code).first()
+    if not current_player:
+        current_player = create_new_player(connect_code)
+    if not current_player:
+        return None
+    played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== current_player.id, SlippiReplay.player2_id== current_player.id))]
+    return played
+
 def calc_ratio(count):
     total = count['success'] + count['fail']
     if total > 0:
@@ -187,7 +197,3 @@ def upload(request):
         proc = Process(target=load_slippi_files, args=(filename,))
         proc.start()
     return 'upload template'
-
-def games_get(player_id):
-    played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== player_id, SlippiReplay.player2_id== player_id))]
-    return played
