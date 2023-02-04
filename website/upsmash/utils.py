@@ -5,6 +5,26 @@ from sqlalchemy import exc
 from datetime import datetime, timedelta
 from upsmash import db
 from upsmash.models import PlayerRating, Player, MeleeCharacters
+from flask import abort
+
+def get_safe_connect_code(connect_code):
+    return connect_code.replace("#","-").upper()
+
+def get_real_connect_code(connect_code):
+    return connect_code.replace("-","#").upper()
+
+def get_or_create_player(connect_code):
+    connect_code = get_real_connect_code(connect_code)
+    current_player = Player.query.filter_by(connect_code=connect_code).first()
+    if not current_player:
+        current_player = create_new_player(connect_code)
+    return current_player
+
+def get_player_or_abort(connect_code):
+    player = get_or_create_player(connect_code)
+    if not player:
+        abort(404)
+    return player
 
 def get_slippi_info(connect_code):
     connect_code = connect_code.upper()
@@ -55,14 +75,6 @@ def refresh_player_rating(player, rating=None):
     player.current_rating = rating
     db.session.add(player_rating)
     db.session.commit()
-
-def get_player(player_id):
-    current_player = Player.query.filter_by(id=player_id).first()
-    if current_player:
-        return current_player.id
-    else:
-        print("Couldn't find player")
-        return None
 
 def create_new_player(connect_code):
     player_info = get_slippi_info(connect_code)

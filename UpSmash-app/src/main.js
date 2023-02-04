@@ -8,6 +8,20 @@ const chokidar = require('chokidar');
 const { SlippiGame } = require("@slippi/slippi-js");
 const _ = require("lodash");
 
+const slippi_game_end_types = {
+  1: "TIME!",
+  2: "GAME!",
+  7: "No Contest",
+};
+
+//calls api for uploading files
+const SLPoptions = {
+  hostname:'localhost',
+  port: '5000',
+  path: '/upload_slp',
+  method: 'POST'
+};
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 //if (require('electron-squirrel-startup')) {
 //  app.quit();
@@ -57,7 +71,7 @@ ipcMain.on('parentPath', function(e, item) {
     usePolling: true,
     ignoreInitial: true,
   });
-  const gameByPath = {};
+  let current_game_path = "";
   let fileList = new Array();
   let player_wins = [0, 0, 0, 0] //Need to reset this when you play a new player
   watcher
@@ -68,63 +82,41 @@ ipcMain.on('parentPath', function(e, item) {
       console.log('ADDED')
     })
     .on('change', (path) => {
-      console.log("File change");
       // triggers on file being written to
-      // intialize the new variables we need
-      let gameState, settings, frames, latestFrame, gameEnd;
+      console.log("File change");
+      if (current_game_path != path) {
+        current_game_path = path;
+        console.log("New game");
+      }
+      
       try {
         // create the game if it doesn't exist
-        let game = _.get(gameByPath, [path, "game"]); //Confused on this, is it trying to create an empty file if it doesnt exist?
-        if (!game) {
-          // Make sure to enable `processOnTheFly` to get updated stats as the game progresses
-          game = new SlippiGame(path, { processOnTheFly: true });
-          gameByPath[path] = {
-            game: game,
-            state: {
-              settings: null,
-              detectedPunishes: {},
-            },
-          };
-        }
-        gameState = _.get(gameByPath, [path, "state"]);
-        settings = game.getSettings();
-        frames = game.getFrames();
-        latestFrame = game.getLatestFrame();
-        gameEnd = game.getGameEnd();
-        metadata = game.getMetadata();
-        writeOp = game.SlpFileWriterOptions
+        game = new SlippiGame(path, { processOnTheFly: true });
       } catch (err) {
         console.log(err);
         return;
       }
+      let settings, frames, latestFrame, gameEnd;
+      settings = game.getSettings();
+      frames = game.getFrames();
+      latestFrame = game.getLatestFrame();
+      gameEnd = game.getGameEnd();
 
-      const matchId = settings['matchInfo']['matchId'];
-      const matchSub = matchId.split('.')[1];
-      const matchType = matchSub.split('-')[0];
-      if (!gameState.settings && settings) {
-        console.log("[Game Start] New game has started");
-        //console.log(settings);
-        gameState.settings = settings;
-      } else {
-        console.log("Not a new game");
-      }
-      if ( matchType == 'ranked') { 
-        console.log(gameEnd)
+      let matchId = settings['matchInfo']['matchId'];
+      let matchSub = matchId.split('.')[1];
+      let matchType = matchSub.split('-')[0];
+      if (true || matchType == 'ranked') { 
         // gameEnd will be null until the game is over
         if (gameEnd) {
-          const endTypes = {
-            1: "TIME!",
-            2: "GAME!",
-            7: "No Contest",
-          };
-          const endMessage = _.get(endTypes, gameEnd.gameEndMethod) || "Unknown";
+          console.log(gameEnd)
+          const endMessage = _.get(slippi_game_end_types, gameEnd.gameEndMethod) || "Unknown";
           const lrasText = gameEnd.gameEndMethod === 7 ? ` | Quitter Index: ${gameEnd.lrasInitiatorIndex}` : "";
           console.log(`[Game Complete] Type: ${endMessage}${lrasText}`)
           // console.log(gameEnd)
           players = settings['players']
           for (let i = 0; i < players.length; i++) {
             player_wins[i] += gameEnd['placements'][i]['position']
-            if (player_wins[i] >= 2) {
+            if (player_wins[i] >= 0) {
               player_wins = [0, 0, 0, 0]
               for (let i = 0; i < players.length; i++) {
                 rating(players[i]['connectCode'])
@@ -141,13 +133,7 @@ ipcMain.on('parentPath', function(e, item) {
     });
   });
 
-//calls api for uploading files
-const SLPoptions = {
-  hostname:'localhost',
-  port: '5000',
-  path: '/upload_slp',
-  method: 'POST'
-};
+
 // this function submits a list of local files in batches of 10
 // any leftovers are submitted after
 
@@ -234,7 +220,7 @@ async function rating(connect_code) {
   // send the actual data
   req.write(connect_code);
   req.end();
-  }
+}
 // Create menu template 
 const mainMenuTemplate = [
   {

@@ -2,7 +2,7 @@ from flask import render_template, request, Blueprint
 from datetime import date, timedelta
 from upsmash.models import PlayerRating, Player
 from upsmash.main.utils import upload, games_get, refresh_player_rating
-from upsmash.utils import get_player
+from upsmash.utils import get_player_or_abort
 
 main = Blueprint('main', __name__)
 
@@ -79,7 +79,7 @@ def top_player_graph():
 
 @main.route('/rating/<connect_code>', methods=['GET'])
 def rating(connect_code):
-    player = Player.query.get_or_404(connect_code=connect_code)
+    player = get_player_or_abort(connect_code)
     refresh_player_rating(player)
     curr_rating = PlayerRating.query.filter_by(player_id=player.id).order_by(PlayerRating.datetime).first()
     return curr_rating.toJSON()

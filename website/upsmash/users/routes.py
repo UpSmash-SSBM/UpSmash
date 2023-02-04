@@ -1,7 +1,7 @@
 from upsmash.utils import refresh_player_rating
 from flask import render_template, redirect, request, Blueprint
 from upsmash.models import PlayerRating, Player, SlippiReplay
-from upsmash.users.utils import get_player_or_abort, get_safe_connect_code, get_real_connect_code
+from upsmash.utils import get_player_or_abort, get_safe_connect_code, get_real_connect_code
 
 users = Blueprint('users', __name__)
     
