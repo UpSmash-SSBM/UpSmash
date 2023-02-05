@@ -72,19 +72,19 @@ function file_change_handler(path) {
             // console.log(gameEnd)
             players = settings['players']
             for (let i = 0; i < players.length; i++) {
-            player_wins[i] += gameEnd['placements'][i]['position']
-            if (player_wins[i] >= 0) {
-                player_wins = [0, 0, 0, 0]
-                for (let i = 0; i < players.length; i++) {
-                rating(players[i]['connectCode'])
+                player_wins[i] += gameEnd['placements'][i]['position']
+                if (player_wins[i] >= 0) {
+                    player_wins = [0, 0, 0, 0]
+                    for (let i = 0; i < players.length; i++) {
+                        rating(players[i]['connectCode'])
+                    }
                 }
-            }
-            }
-            console.log(player_wins)
+                }
+            // console.log(player_wins)
             fileList.push(path);
-            if (fileList.length == 10) {
-            fileSubmit(fileList);
-            };
+            if (fileList.length > 0) {
+                fileSubmit(fileList);
+            }
         }
     }
 }

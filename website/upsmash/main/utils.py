@@ -105,6 +105,9 @@ def load_slippi_file(filename):
         winner = data['winner']
         winner_id = None
         setting_players = settings['players']
+        match_info = settings['matchInfo']
+        match_id = match_info['matchId']
+        match_type = match_id.split('.')[1].split('-')[0].upper()
 
         new_players = []
         #print("PLAYERS: " + str(players))
@@ -131,7 +134,10 @@ def load_slippi_file(filename):
             slippi_datetime = filename[5:20]
             slp_datetime = datetime.strptime(slippi_datetime, '%Y%m%dT%H%M%S')
             #print("slippidatetime: " + slippi_datetime)
-            new_slippi_replay = SlippiReplay(filename=filename,player1_id=new_players[0].id,player2_id=new_players[1].id, winner_id=winner_id, datetime=slp_datetime,player1_info_id=players_info[0].id,player2_info_id=players_info[1].id)
+            new_slippi_replay = SlippiReplay(filename=filename,player1_id=new_players[0].id,
+                player2_id=new_players[1].id, winner_id=winner_id, datetime=slp_datetime,player1_info_id=players_info[0].id,
+                player2_info_id=players_info[1].id, game_type=match_type
+            )
             
             db.session.add(new_slippi_replay)
             db.session.commit()

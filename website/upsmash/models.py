@@ -32,6 +32,17 @@ class MeleeCharacters(enum.Enum):
     def __str__(self):
         return self.name
 
+class MatchType(enum.Enum):
+    RANKED = 0
+    UNRANKED = 1
+    DIRECT = 2
+
+    def __str__(self):
+        return self.name
+
+class RankedSet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
 class PlayerRating(db.Model):
     """A slippi action counts"""
     id = db.Column(db.Integer, primary_key=True)
@@ -94,6 +105,7 @@ class SlippiReplay(db.Model):
 
     winner_id = db.Column(db.Integer, db.ForeignKey("player.id"))
     winner = db.relationship("Player", foreign_keys=[winner_id], backref=db.backref("winner_replay", uselist=False))
+    game_type = db.Column(db.Enum(MatchType))
     datetime = db.Column(db.DateTime)
 
     def get_player(self, player_id):

@@ -5,7 +5,7 @@ from upsmash.utils import get_player_or_abort, get_safe_connect_code, get_real_c
 from upsmash.users.utils import get_rank_icon, get_rank
 
 users = Blueprint('users', __name__)
-    
+
 @users.route('/user', methods=['POST'])
 def user_redirect():
     current_player = get_player_or_abort(request.form['connect_code'])
@@ -26,19 +26,19 @@ def user(connect_code):
     total_games = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).count()
     wins = SlippiReplay.query.filter_by(winner_id=player.id).count()
     losses = total_games - wins
-    slippi_replays = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).order_by(SlippiReplay.datetime).limit(20)
+    slippi_replays = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).order_by(SlippiReplay.datetime)
     games = [
         {
             'name': 'ranked',
-            'games': slippi_replays
+            'games': slippi_replays.filter_by(game_type='RANKED').limit(20)
         },
         {
             'name': 'unranked',
-            'games': None
+            'games': slippi_replays.filter_by(game_type='UNRANKED').limit(20)
         },
         {
             'name': 'direct',
-            'games': None
+            'games': slippi_replays.filter_by(game_type='DIRECT').limit(20)
         },
     ]
     context = {
