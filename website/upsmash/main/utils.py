@@ -202,4 +202,4 @@ def upload(request):
         #load_slippi_files(filename)
         proc = Process(target=load_slippi_files, args=(filename,))
         proc.start()
-    return 'upload template'
+    return 'Processing files'

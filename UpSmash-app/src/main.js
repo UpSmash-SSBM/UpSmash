@@ -1,6 +1,5 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
-const { request } = require('http');
 const { game_checker } = require('./js_utils/game_watcher');
 const { file_submit } = require('./js_utils/file_submit');
 
@@ -9,15 +8,12 @@ const { file_submit } = require('./js_utils/file_submit');
 //  app.quit();
 //}
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: __dirname + '/static/images/icon.png',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -34,12 +30,12 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
-};
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow) ;
+app.on('ready', createWindow);
 
 ipcMain.on('fileList', function(e, item){
   file_submit(item)

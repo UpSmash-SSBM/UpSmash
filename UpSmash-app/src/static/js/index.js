@@ -18,15 +18,14 @@ function get_local(fileList) {
         player2_code = players[1]['connectCode']
         codes.push(player1_code, player2_code)
     }
-    for (let i=0; i<codes.length; i++){
-        for (let j=i; j<codes.length; j++)
-        {
-            if (codes[i] == codes[j])
-            m++;
-            if (mf<m)
-            {
-            mf=m; 
-            item = codes[i];
+    for (let i=0; i<codes.length; i++) {
+        for (let j=i; j<codes.length; j++) {
+            if (codes[i] == codes[j]){
+                m++;
+            }
+            if (mf<m) {
+                mf=m; 
+                item = codes[i];
             }
         }
         m=0;
@@ -72,7 +71,7 @@ function doRequest(url, connect_code) {
         req.write(connect_code);
         req.end();
     })
-};
+}
 
 // listens for a click change
 document.getElementById("slpFolder").addEventListener("change", (event) => {
@@ -81,19 +80,9 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
     let item = document.createElement("li");
     // this is the directory where the files are
     let parent = event.target.files[0].path;
-    let sub = parent.split('\\');
-    let removed = sub.pop();
+    let final = event.target.files[0].path.split('Game')[0]
     var connect_local;
-    // just removing some of the stuff so we can append the filename at the end and get an absolute path
-    let final = '';
     // adds the file names to the list, after loop will have the full list of files names to upload
-    for (const subs of sub) {
-        if (final === '') {
-            final = final + subs
-        } else {
-            final = final + '/' + subs;
-        }
-    };
     item.textContent = final;
     output.appendChild(item);
     let fileList = new Array();

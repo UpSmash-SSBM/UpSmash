@@ -1,12 +1,18 @@
 const chokidar = require('chokidar');
 const { SlippiGame } = require("@slippi/slippi-js");
 const _ = require("lodash");
+const { request } = require('http');
+const { file_submit } = require('./file_submit');
 
 const slippi_game_end_types = {
     1: "TIME!",
     2: "GAME!",
     7: "No Contest",
 };
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function rating(connect_code) {
     await sleep(5000);
@@ -21,11 +27,12 @@ async function rating(connect_code) {
   
     const req = request(rank_options, (response) => {
       response.setEncoding('utf8');
-      console.log(response.statusCode);
+      //console.log(response.statusCode);
       // catches the servers response and prints it
       response.on('data', (rating_response) => {
         if (response.statusCode == 200) {
-          console.log(rating_response);
+          //console.log(rating_response);
+          return rating_response['rating']
         }
       });
       // if the response is over, writes it also
@@ -36,7 +43,7 @@ async function rating(connect_code) {
     // error processing
     req.on('error', (err) => {
       console.log(response.statusCode);
-      //console.log(err);
+      console.log(err);
     });
     // send the actual data
     req.write(connect_code);
@@ -53,37 +60,32 @@ function file_change_handler(path) {
         console.log(err);
         return;
     }
+    let fileList = new Array();
     let settings, frames, latestFrame, gameEnd;
     settings = game.getSettings();
     frames = game.getFrames();
     latestFrame = game.getLatestFrame();
     gameEnd = game.getGameEnd();
-
     let matchId = settings['matchInfo']['matchId'];
     let matchSub = matchId.split('.')[1];
     let matchType = matchSub.split('-')[0];
     if (true || matchType == 'ranked') { 
         // gameEnd will be null until the game is over
         if (gameEnd) {
-            console.log(gameEnd)
             const endMessage = _.get(slippi_game_end_types, gameEnd.gameEndMethod) || "Unknown";
             const lrasText = gameEnd.gameEndMethod === 7 ? ` | Quitter Index: ${gameEnd.lrasInitiatorIndex}` : "";
-            console.log(`[Game Complete] Type: ${endMessage}${lrasText}`)
+            //console.log(`[Game Complete] Type: ${endMessage}${lrasText}`)
             // console.log(gameEnd)
             players = settings['players']
+            //console.log(players)
             for (let i = 0; i < players.length; i++) {
-                player_wins[i] += gameEnd['placements'][i]['position']
-                if (player_wins[i] >= 0) {
-                    player_wins = [0, 0, 0, 0]
-                    for (let i = 0; i < players.length; i++) {
-                        rating(players[i]['connectCode'])
-                    }
-                }
-                }
+                rating(players[i]['connectCode'])
+            }
             // console.log(player_wins)
+            
             fileList.push(path);
             if (fileList.length > 0) {
-                fileSubmit(fileList);
+                file_submit(fileList);
             }
         }
     }
@@ -98,8 +100,7 @@ function game_checker(item) {
         ignoreInitial: true,
     });
     let current_game_path = "";
-    let fileList = new Array();
-    let player_wins = [0, 0, 0, 0] //Need to reset this when you play a new player
+    
     watcher
     .on('ready', function() {
         console.log('Initial scan complete. Ready for changes')
@@ -116,4 +117,4 @@ function game_checker(item) {
     });
 }
 
-module.exports = { game_checker };
+module.exports = { game_checker, rating };

@@ -23,9 +23,9 @@ async function file_submit (item) {
         if (files % batch == 0 && files != 0) {
             const req = request(SLPoptions, (response) => {
                 response.setEncoding('utf8');
-                console.log(response.statusCode);
+                //console.log(response.statusCode);
                 response.on('end', () => {
-                    console.log('No more data in response.');
+                    // console.log('No more data in response.');
                 });
                 req.end();
             });
@@ -44,12 +44,12 @@ async function file_submit (item) {
             }
             const req = request(SLPoptions, (response) => {
                 response.setEncoding('utf8');
-                console.log(response.statusCode);
+                // console.log(response.statusCode);
                 response.on('data', (chunk) => {
-                    console.log(chunk)
+                    // console.log(chunk)
                 });
                 response.on('end', () => {
-                    console.log('No more data in response.');
+                    // console.log('No more data in response.');
                 });
                 req.end();
             });
