@@ -73,6 +73,11 @@ class SlippiReplayPlayerInfo(db.Model):
     character = db.Column(db.Enum(MeleeCharacters))
     characterColor = db.Column(db.Integer)
 
+    def get_character_icon(self):
+        base_folder = 'images/character_portraits/'
+        icon_string = base_folder + str(self.character).lower() + '/' + str(self.characterColor) +'.png'
+        return icon_string
+
 class SlippiReplay(db.Model):
     """A slippi replay"""
     id = db.Column(db.Integer, primary_key=True)
@@ -102,12 +107,17 @@ class SlippiReplay(db.Model):
             overall = SlippiOverall.query.filter_by(slippi_replay_id=self.id,player_id=self.player2_id).first()
         return overall
 
-    def get_player_overall_ordered(self, id):
+    def get_players_ordered(self, id):
+        if self.player1_id == id:
+            return [self.player1, self.player2]
+        else:
+            return [self.player2, self.player1]
 
+    def get_player_overall_ordered(self, id):
         player1 = self.get_overall(1)
         player2 = self.get_overall(2)
 
-        if player1.player_id == id:
+        if self.player1_id == id:
             return [player1, player2]
         else:
             return [player2, player1]
@@ -118,6 +128,22 @@ class SlippiReplay(db.Model):
         elif player_number == 2:
             current_player = Player.query.filter_by(id=self.player2_id).first()
         return current_player.connect_code
+
+    def get_player_info(self, player_number):
+        if player_number == 1:
+            player_info = SlippiReplayPlayerInfo.query.filter_by(id=self.player1_info_id).first()
+        elif player_number == 2:
+            player_info = SlippiReplayPlayerInfo.query.filter_by(id=self.player2_info_id).first()
+        return player_info
+
+    def get_player_info_ordered(self, id):
+        player1 = self.get_player_info(1)
+        player2 = self.get_player_info(2)
+
+        if self.player1_id == id:
+            return [player1, player2]
+        else:
+            return [player2, player1]
 
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
