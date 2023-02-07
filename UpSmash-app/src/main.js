@@ -5,35 +5,16 @@ if (setupEvents.handleSquirrelEvent()) {
 }
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
-const fs = require('fs');
-const { request } = require('http');
-const FormData = require('form-data');
-const { formatWithOptions } = require('util');
-const chokidar = require('chokidar');
-const { SlippiGame } = require("@slippi/slippi-js");
-const _ = require("lodash");
-
-
-const slippi_game_end_types = {
-  1: "TIME!",
-  2: "GAME!",
-  7: "No Contest",
-};
-
-//calls api for uploading files
-const SLPoptions = {
-  hostname:'localhost',
-  port: '5000',
-  path: '/upload_slp',
-  method: 'POST'
-};
-
-if (require('electron-squirrel-startup')) app.quit()
+if (require('electron-squirrel-startup')) {
+  app.quit()
+}
 // if first time install on windows, do not run application, rather
 // let squirrel installer do its work
 if (setupEvents.handleSquirrelEvent()) {
   process.exit()
 }
+const { game_checker } = require('./js_utils/game_watcher');
+const { file_submit } = require('./js_utils/file_submit');
 
 const createWindow = () => {
   // Create the browser window.

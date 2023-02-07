@@ -2,7 +2,6 @@ const electron = require('electron');
 const { ipcRenderer } = electron;
 const { SlippiGame } = require("@slippi/slippi-js");
 const { request } = require('http');
-
 //function for determing who the local player is
 function get_local(fileList) {
     let codes = new Array();

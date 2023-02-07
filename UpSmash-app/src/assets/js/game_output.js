@@ -13,9 +13,9 @@ player1_wins = 0;
 player2_wins = 0;
 
 document.getElementById("slpFolder").addEventListener("change", (event) => {
-    console.log('caught event')
+    //console.log('caught event')
     parentFolder = event.target.files[0].path.split('Game')[0];
-    console.log(parentFolder)
+    //console.log(parentFolder)
     isFolderSet = true;
     const watcher = chokidar.watch(parentFolder, {
         ignored: '/*.slp', // TODO: This doesn't work. Use regex?
@@ -29,7 +29,7 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
     watcher.on('change', (path) => {
         if (current_game_path != path) {
             current_game_path = path;
-            console.log("New game pt2");
+            //console.log("New game pt2");
         }
         let game = new SlippiGame(path, { processOnTheFly: true });
         let gameEnd = game.getGameEnd();
