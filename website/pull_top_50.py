@@ -1,12 +1,14 @@
+from upsmash import create_full_app
+from upsmash.utils import get_or_create_player
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
 import time
-from player_rating_refresh import PlayerRatingClass
+
+app = create_full_app()
 
 top_50_players = []
-
+engine_url = ['sqlite:///db.sqlite3']
 url = "https://slippi.gg/leaderboards?region="
 regions = ['na', 'eu', 'other']
 options = Options()
@@ -25,7 +27,6 @@ for region in regions:
         top_50_players.append((player_name, player_tag))
 driver.close()
 
-#player_rate = PlayerRatingClass(engine_url)
 for player in top_50_players:
    print(player[1])
-   #player_rate.insert_new_rating(player[1])
+   get_or_create_player(player[1])
