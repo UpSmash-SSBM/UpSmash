@@ -69,9 +69,10 @@ function file_change_handler(path) {
     let matchId = settings['matchInfo']['matchId'];
     let matchSub = matchId.split('.')[1];
     let matchType = matchSub.split('-')[0];
-    if (true || matchType == 'ranked') { 
+    
         // gameEnd will be null until the game is over
-        if (gameEnd) {
+    if (gameEnd) {
+        if (matchType == 'ranked') { 
             const endMessage = _.get(slippi_game_end_types, gameEnd.gameEndMethod) || "Unknown";
             const lrasText = gameEnd.gameEndMethod === 7 ? ` | Quitter Index: ${gameEnd.lrasInitiatorIndex}` : "";
             //console.log(`[Game Complete] Type: ${endMessage}${lrasText}`)
@@ -82,11 +83,10 @@ function file_change_handler(path) {
                 rating(players[i]['connectCode'])
             }
             // console.log(player_wins)
-            
-            fileList.push(path);
-            if (fileList.length > 0) {
-                file_submit(fileList);
-            }
+        }
+        fileList.push(path);
+        if (fileList.length > 0) {
+            file_submit(fileList);
         }
     }
 }
