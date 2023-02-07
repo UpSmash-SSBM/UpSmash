@@ -11,12 +11,12 @@
     <img id="upSmashLogo" src="{{ url_for('static', filename='images/UpSmash-02-purple.jpg') }}" alt="UpSmash Logo">
     <br>
     <div class="flexCenter">
-    <form action="/user" method="POST" enctype="multipart/form-data" role="search">
-        <input id="search" name="connect_code" type="search" placeholder="Enter player Slippi tag" autofocus required />
-        <button type="submit">
-            <img src="{{ url_for('static', filename='images/search.svg') }}" width="25" height="25">
-        </button>
-    </form>
+      <form action="/user" method="POST" enctype="multipart/form-data" role="search">
+          <input id="search" name="connect_code" type="search" placeholder="Enter player Slippi tag" autofocus required />
+          <button type="submit">
+              <img src="{{ url_for('static', filename='images/search.svg') }}" width="25" height="25">
+          </button>
+      </form>
     </div>
       <br>
       <div class="flexCenter flexCenterText" >
@@ -25,6 +25,10 @@
             You can usually find it at: "C:/Users/&lt;username&gt;/Documents/Slippi"<br>
             Select the folder itself, not its contents</span></div>
         </div>
+      </div>
+      <div class="flexCenter flexCenterText">
+        <br><br><br>
+        <h4><a href="{{ url_for('static', filename='installers/') }}" download>Download the Desktop App</a></h4>
       </div>
       {% if na_players | length == 10 and eu_players | length == 10 and other_players | length == 10 %}
       <div class="flexbox-container flexbox-container1">

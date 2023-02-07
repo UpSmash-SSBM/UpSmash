@@ -1,8 +1,8 @@
 from flask import render_template, request, Blueprint
 from datetime import date, timedelta
 from upsmash.models import PlayerRating, Player
-from upsmash.main.utils import upload, games_get, refresh_player_rating
-from upsmash.utils import get_player_or_abort
+from upsmash.main.utils import upload, games_get
+from upsmash.utils import get_player_or_abort, refresh_player_rating
 
 main = Blueprint('main', __name__)
 
