@@ -1,3 +1,4 @@
+let node_env = 'production'
 const setupEvents = require('./installers/setupEvents')
 if (setupEvents.handleSquirrelEvent()) {
    // squirrel event handled and app will exit in 1000ms, so don't do anything else
@@ -37,7 +38,7 @@ const createWindow = () => {
   Menu.setApplicationMenu(mainMenu);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
@@ -75,7 +76,7 @@ if(process.platform == 'darwin'){
   mainMenuTemplate.unshift({});
 }
 // Add Dev tools item if not in production
-if(process.env.NODE_ENV !== 'production'){
+if(node_env !== 'production'){
   mainMenuTemplate.push({
     label: 'Dev tools',
     submenu: [
