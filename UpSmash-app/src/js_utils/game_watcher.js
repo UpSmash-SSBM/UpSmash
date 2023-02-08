@@ -3,6 +3,7 @@ const { SlippiGame } = require("@slippi/slippi-js");
 const _ = require("lodash");
 const { request } = require('http');
 const { file_submit } = require('./file_submit');
+const https = require('node:https');
 
 const slippi_game_end_types = {
     1: "TIME!",
@@ -19,13 +20,13 @@ async function rating(connect_code) {
     // this guy is going to actually tell the server to get new rank when its called
     // just submit the new file, and then update the rank server side, don't parse locally
     const rank_options = {
-      hostname:'localhost',
-      port: '5000',
+      hostname:'www.upsmash.net',
+      port: '443',
       path: '/rating/' + connect_code.replace('#','-'),
       method: 'GET'
     };
   
-    const req = request(rank_options, (response) => {
+    const req = https.request(rank_options, (response) => {
       response.setEncoding('utf8');
       //console.log(response.statusCode);
       // catches the servers response and prints it

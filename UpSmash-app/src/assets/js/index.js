@@ -2,6 +2,20 @@ const electron = require('electron');
 const { ipcRenderer } = electron;
 const { SlippiGame } = require("@slippi/slippi-js");
 const { request } = require('http');
+const https = require('node:https');
+
+// function for getting a list of players games
+async function get_database_games(connect_code) {
+    const game_options = {
+        hostname:'www.upsmash.net',
+        port: '443',
+        path: '/player_games/' + connect_code.replace('#','-'),
+        method: 'GET'
+    };
+    let response = await doRequest(game_options, connect_code)
+    return response
+}
+
 //function for determing who the local player is
 function get_local(fileList) {
     let codes = new Array();
@@ -32,23 +46,13 @@ function get_local(fileList) {
     }
     return item
 }
-// function for getting a list of players games
-async function games_played(connect_code) {
-    const game_options = {
-        hostname:'localhost',
-        port: '5000',
-        path: '/player_games/' + connect_code.replace('#','-'),
-        method: 'GET'
-    };
-    let response = await doRequest(game_options, connect_code)
-    return response
-}
+
 
 function doRequest(url, connect_code) {
     return new Promise(function (resolve, reject) {
-        const req = request(url, (response) => {
+        const req = https.request(url, (response) => {
             response.setEncoding('utf8');
-            console.log(response.statusCode);
+            //console.log(response.statusCode);
             var body = '';
             // catches the servers response and prints it
             response.on('data', (game_list) => {
@@ -64,7 +68,7 @@ function doRequest(url, connect_code) {
         // error processing
         req.on('error', (err) => {
             console.log(err)
-            console.log(response.statusCode);
+            console.log(err.statusCode);
             reject(err);
         });
         // send the actual data
@@ -76,42 +80,46 @@ function doRequest(url, connect_code) {
 // listens for a click change
 document.getElementById("slpFolder").addEventListener("change", (event) => {
     // variables to write to in the display in order to tell the user how many files have been uploaded
-    let output = document.getElementById("listing");
-    let item = document.createElement("li");
+    let htmlList = document.getElementById("listing");
+    let htmlListItem = document.createElement("li");
     // this is the directory where the files are
-    let parent = event.target.files[0].path;
-    let final = event.target.files[0].path.split('Game')[0]
-    var connect_local;
+    let mainFolder = event.target.files[0].path.split('Game')[0]
     // adds the file names to the list, after loop will have the full list of files names to upload
-    item.textContent = final;
-    output.appendChild(item);
-    let fileList = new Array();
-    let fileSub = new Array();
+    htmlListItem.textContent = mainFolder;
+    htmlList.appendChild(htmlListItem);
+    let localFileList = new Array();
+    let localFileIDs = new Array();
     for (const file of event.target.files){
-        if (file.path.split('.')[file.path.split('.').length - 1] == 'slp') {
-            fileList.push(file.path);
-            parent = file.path.split('.')[0, file.path.split('.').length - 2];
-            sub = parent.split('\\')[parent.split('\\').length - 1];
-            fileSub.push(sub)
+        if (file.path.includes('slp')) {
+            localFileList.push(file.path);
+            let splitFilePath = file.path.split('\\')
+            let slippiReplayName = splitFilePath[splitFilePath.length - 1]
+            let slippiGameID = slippiReplayName.replace('.slp','')
+            localFileIDs.push(slippiGameID)
         }
     }
-    console.log(fileList)
-    connect_local = get_local(fileList)
-    console.log(connect_local)
-    let game_list = games_played(connect_local);
-    game_list.then((value) => {
-        let to_send_final = new Array()
-        let to_send = fileSub.filter(function(item) {
-            return value.indexOf(item) == -1;
+    //console.log(fileList)
+    var connect_local = get_local(localFileList)
+    //console.log(connect_local)
+    let databaseGamesPromise = get_database_games(connect_local);
+    databaseGamesPromise.then((databaseGames) => {
+        console.log(databaseGames)
+        console.log(localFileIDs)
+        let filesToSend = new Array();
+        let to_send = localFileIDs.filter(function(item) {
+            console.log(item)
+            return databaseGames.indexOf(item) == -1;
         });
+        console.log(to_send)
         for (suffix in to_send) {
-            let attach = final + '/' + to_send[suffix] + '.slp'
-            to_send_final.push(attach)
+            console.log(suffix)
+            let attach = mainFolder + to_send[suffix] + '.slp'
+            filesToSend.push(attach)
         }
-        console.log(to_send_final)
-        if (fileList.length ==  event.target.files.length) {
-            ipcRenderer.send("fileList", to_send_final)
-            ipcRenderer.send("parentPath", final)
+        console.log(filesToSend)
+        if (localFileList.length == event.target.files.length) {
+            ipcRenderer.send("fileList", filesToSend)
+            ipcRenderer.send("parentPath", mainFolder)
         }; 
     })
 }, false);

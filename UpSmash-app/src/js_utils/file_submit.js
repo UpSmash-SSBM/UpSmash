@@ -1,11 +1,12 @@
 const FormData = require('form-data');
 const fs = require('fs');
 const { request } = require('http');
+const https = require('node:https');
 
 //calls api for uploading files
 const SLPoptions = {
-    hostname:'localhost',
-    port: '5000',
+    hostname:'www.upsmash.net',
+    port: '443',
     path: '/upload_slp',
     method: 'POST'
 };
@@ -21,19 +22,20 @@ async function file_submit (item) {
         SLPoptions['headers'] = form.getHeaders();
         // now make the request to the server if 10 files exist
         if (files % batch == 0 && files != 0) {
-            const req = request(SLPoptions, (response) => {
+            const req = https.request(SLPoptions, (response) => {
                 response.setEncoding('utf8');
                 //console.log(response.statusCode);
                 response.on('end', () => {
                     // console.log('No more data in response.');
                 });
+                req.write(form)
                 req.end();
             });
             req.on('error', (err) => {
                 console.log(err);
             });
-            form.pipe(req);
-            var form = new FormData();
+            // form.pipe(req);
+            // var form = new FormData();
         } else if ((item.length - files) < batch) {
             const sub_list = item.slice(files);
             const form = new FormData();
@@ -51,12 +53,13 @@ async function file_submit (item) {
                 response.on('end', () => {
                     // console.log('No more data in response.');
                 });
+                req.write(form)
                 req.end();
             });
             req.on('error', (err) => {
                 console.log(err);
             });
-            form.pipe(req);
+            // form.pipe(req);
             break
         }
     }

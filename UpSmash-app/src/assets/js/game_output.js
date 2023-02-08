@@ -43,7 +43,7 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
         if (!gameInProgress) {
             player1_rating = rating(player1_code).then()
             player2_rating = rating(player2_code).then()
-            console.log(player1_rating)
+            //console.log(player1_rating)
         }
         gameInProgress = true;
 
