@@ -51,17 +51,13 @@ async function rating(connect_code) {
     req.end();
 }
 
-function file_change_handler(path) {
-    // triggers on file being written to
-    // console.log("File change");
+function file_change_handler(path, isFirstEndFrame) {
     try {
-        // create the game if it doesn't exist
         game = new SlippiGame(path, { processOnTheFly: true });
     } catch (err) {
         console.log(err);
         return;
     }
-    let fileList = new Array();
     let settings, frames, latestFrame, gameEnd;
     settings = game.getSettings();
     frames = game.getFrames();
@@ -71,8 +67,8 @@ function file_change_handler(path) {
     let matchSub = matchId.split('.')[1];
     let matchType = matchSub.split('-')[0];
     
-        // gameEnd will be null until the game is over
-    if (gameEnd) {
+    // gameEnd will be null until the game is over
+    if (gameEnd && !isFirstEndFrame) { //isFirstEndFrame is used because there are actually two end frames
         if (matchType == 'ranked') { 
             const endMessage = _.get(slippi_game_end_types, gameEnd.gameEndMethod) || "Unknown";
             const lrasText = gameEnd.gameEndMethod === 7 ? ` | Quitter Index: ${gameEnd.lrasInitiatorIndex}` : "";
@@ -81,15 +77,19 @@ function file_change_handler(path) {
             players = settings['players']
             //console.log(players)
             for (let i = 0; i < players.length; i++) {
+                console.log('updating rating for ' + players[i]['connectCode'])
                 rating(players[i]['connectCode'])
             }
             // console.log(player_wins)
         }
+        let fileList = new Array();
         fileList.push(path);
-        if (fileList.length > 0) {
-            file_submit(fileList);
-        }
+        // console.log('sending played game')
+        file_submit(fileList);
+        // console.log('sent played game')
+        return true;
     }
+    return false;
 }
 
 function game_checker(item) {
@@ -101,7 +101,7 @@ function game_checker(item) {
         ignoreInitial: true,
     });
     let current_game_path = "";
-    
+    let isFirstEndFrame = false;
     watcher
     .on('ready', function() {
         console.log('Initial scan complete. Ready for changes')
@@ -112,9 +112,10 @@ function game_checker(item) {
     .on('change', (path) => {
         if (current_game_path != path) {
             current_game_path = path;
+            isFirstEndFrame = false;
             console.log("New game");
         }
-        file_change_handler(path)
+        isFirstEndFrame = file_change_handler(path, isFirstEndFrame)
     });
 }
 

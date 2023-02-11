@@ -47,7 +47,6 @@ function get_local(fileList) {
     return item
 }
 
-
 function doRequest(url, connect_code) {
     return new Promise(function (resolve, reject) {
         const req = https.request(url, (response) => {
@@ -103,23 +102,18 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
     //console.log(connect_local)
     let databaseGamesPromise = get_database_games(connect_local);
     databaseGamesPromise.then((databaseGames) => {
-        console.log(databaseGames)
-        console.log(localFileIDs)
         let filesToSend = new Array();
         let to_send = localFileIDs.filter(function(item) {
-            console.log(item)
             return databaseGames.indexOf(item) == -1;
         });
-        console.log(to_send)
         for (suffix in to_send) {
-            console.log(suffix)
             let attach = mainFolder + to_send[suffix] + '.slp'
             filesToSend.push(attach)
         }
-        console.log(filesToSend)
         if (localFileList.length == event.target.files.length) {
+            //console.log('sending file list')
             ipcRenderer.send("fileList", filesToSend)
             ipcRenderer.send("parentPath", mainFolder)
-        }; 
+        };
     })
 }, false);
