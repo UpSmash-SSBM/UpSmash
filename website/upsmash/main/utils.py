@@ -8,7 +8,7 @@ import json
 from sqlalchemy import or_
 from selenium import webdriver
 from multiprocessing import Process
-from upsmash.models import Player, SlippiReplay, SlippiActionCounts, SlippiOverall, MeleeCharacters, SlippiReplayPlayerInfo
+from upsmash.models import Player, SlippiReplay, SlippiActionCounts, SlippiOverall, MeleeCharacters, SlippiReplayPlayerInfo, StageID
 from upsmash import db
 from upsmash.utils import create_new_player, refresh_player_rating
 from upsmash import create_min_app
@@ -108,6 +108,7 @@ def load_slippi_file(filename):
         match_info = settings['matchInfo']
         match_id = match_info['matchId']
         match_type = match_id.split('.')[1].split('-')[0].upper()
+        stage_id = StageID(settings['stageId'])
 
         new_players = []
         #print("PLAYERS: " + str(players))
@@ -136,7 +137,7 @@ def load_slippi_file(filename):
             #print("slippidatetime: " + slippi_datetime)
             new_slippi_replay = SlippiReplay(filename=filename,player1_id=new_players[0].id,
                 player2_id=new_players[1].id, winner_id=winner_id, datetime=slp_datetime,player1_info_id=players_info[0].id,
-                player2_info_id=players_info[1].id, game_type=match_type
+                player2_info_id=players_info[1].id, game_type=match_type, stage_id=stage_id
             )
             
             db.session.add(new_slippi_replay)
