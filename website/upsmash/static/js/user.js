@@ -2,9 +2,7 @@
 $(document).ready(function() {
   $(document).on("click",".detailButton",function() {
       var parent = $(this).parents('#match').first();
-      console.log(parent)
       var child = parent.find("#matchDetail");
-      console.log(child)
       child.toggle()
   });
 });
