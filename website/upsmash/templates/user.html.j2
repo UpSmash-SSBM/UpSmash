@@ -43,24 +43,24 @@
                 {% set win = replay.winner_id == player.id %}
                 {% set playersOverall = replay.get_player_overall_ordered(player.id)%}
                 {% set players = replay.get_players_ordered(player.id)%}
-                <div class="flexbox-item flexbox-item-second">
-                  <div class="flexbox-container flexbox-container3">
-                    <div class="flexbox-item flexbox-player flexbox-player-left" {% if win %}style="background-color: #59AD1E;"{% else %}style="background-color: #AD1E1E;"{% endif %}>
-                      <h5>{{ playersOverall[0].player.username }} <img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[0].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 30px; width: 30px;"></h5>
-                      <p>Kills: {{ playersOverall[0].kill_count }}</p>
-                      <p>Openings per Kill: {% if playersOverall[0].openings_per_kill is not none %}{{ playersOverall[0].openings_per_kill | float | round(1) }}{% endif %}</p>
-                      <p>Damage per Opening: {% if playersOverall[0].damage_per_opening is not none %}{{ playersOverall[0].damage_per_opening | round(1) }}{% endif %}</p>
+                <div class="flexbox-item flexbox-item-second" style="background-image: url({{ url_for('static', filename='images/stages/' + (replay.stage_id | string) + '.png') }}); background-size: cover">
+                  <div class="flexbox-container flexbox-container3" style="background-color: {% if win  %}rgba(0, 100, 0, 0.5){% else %}rgba(100, 0, 0, 0.5){% endif %}">
+                    <div class="flexbox-item flexbox-player flexbox-player-left">
+                      <h5>{{ playersOverall[0].player.username }}
+                      <img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[0].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px"></h5>
                     </div>
-                    <div class="flexbox-item flexbox-player flexbox-player-right" {% if win  %}style="background-color: #59AD1E;"{% else %}style="background-color: #AD1E1E;"{% endif %}>
-                      <h5>{{ playersOverall[1].player.username }}  <img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[1].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 30px; width: 30px;"></h5>
-                      <p>Kills: {{ playersOverall[1].kill_count }}</p>
-                      <p>Openings per Kill: {% if playersOverall[1].openings_per_kill is not none %}{{ playersOverall[1].openings_per_kill | float | round(1) }}{% endif %}</p>
-                      <p>Damage per Opening: {% if playersOverall[1].damage_per_opening is not none %}{{ playersOverall[1].damage_per_opening | round(1) }}{% endif %}</p>
+                    <div class="flexbox-item flexbox-player flexbox-player-middle">
+                      <h5>{{ replay.datetime.strftime('%m/%d/%Y - %H:%M') }}</h5>
+                    </div>
+                    <div class="flexbox-item flexbox-player flexbox-player-right">
+                      <h5><img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[1].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px">
+                      {{ playersOverall[1].player.username }}</h5>
                     </div>
                     <div class="detailPanel">
-                      <button class="detail"></button>
+                      <button class="detail tab"></button>
                     </div>
                   </div>
+                  
                   <div class="flexbox-container" id="matchDetail">
                     <h5>Game Stats</h5>
                     <div id="detailWrapper">

@@ -30,15 +30,15 @@ def user(connect_code):
     games = [
         {
             'name': 'ranked',
-            'games': slippi_replays.filter_by(game_type='RANKED').limit(20)
+            'games': slippi_replays.filter_by(game_type='RANKED').limit(40)
         },
         {
             'name': 'unranked',
-            'games': slippi_replays.filter_by(game_type='UNRANKED').limit(20)
+            'games': slippi_replays.filter_by(game_type='UNRANKED').limit(40)
         },
         {
             'name': 'direct',
-            'games': slippi_replays.filter_by(game_type='DIRECT').limit(20)
+            'games': slippi_replays.filter_by(game_type='DIRECT').limit(40)
         },
     ]
     context = {
