@@ -43,7 +43,7 @@
                 {% set win = replay.winner_id == player.id %}
                 {% set playersOverall = replay.get_player_overall_ordered(player.id)%}
                 {% set players = replay.get_players_ordered(player.id)%}
-                <div class="flexbox-item flexbox-item-second" id="match"style="background-image: url({{ url_for('static', filename='images/stages/' + (replay.stage_id | string) + '.png') }}); background-size: cover">
+                <div class="flexbox-item flexbox-item-second" id="match"style="background-image: url({{ url_for('static', filename='images/stages/' + (replay.stage_id |lower | string) + '.png') }}); background-size: cover">
                   <div class="flexbox-container flexbox-container3" style="background-color: {% if win  %}rgba(0, 100, 0, 0.5){% else %}rgba(100, 0, 0, 0.5){% endif %}">
                     <div class="flexbox-item flexbox-player flexbox-player-left">
                       <h5>{{ playersOverall[0].player.username }}
