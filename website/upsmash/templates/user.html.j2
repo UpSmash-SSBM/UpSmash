@@ -72,32 +72,45 @@
                       <button class="detailButton"></button>
                     </div>
                   </div>
-                  
+
                   <div class="flexbox-container" id="matchDetail">
-                    <div id="detailWrapper">
-                      <div class="detail"> Total Inputs: </div>
-                        <div class="stat"> {{playersOverall[0].input_counts}} </div>
-                      <div class="detail"> Damage Dealt: </div>
-                        <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>
-                      <div class="detail"> Kill Count: </div>
-                        <div class="stat"> {{playersOverall[0].kill_count}} </div>
-                      <div class="detail"> Successful Conversions: </div>
-                        <div class="stat"> {{playersOverall[0].successful_conversions}} </div>
-                      <div class="detail"> Conversion Ratio: </div>
-                        {%set conversionRatio = playersOverall[0].successful_conversion_ratio|float * 100%}
-                        <div class="stat"> {{conversionRatio |round(2,'common')}}%</div>
-                      <div class="detail"> Damage Dealt: </div>
-                        <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>
-                      <div class="detail"> Damage Dealt: </div>
-                        <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>
-                      <div class="detail"> Damage Dealt: </div>
-                        <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>
-                      <div class="detail"> Damage Dealt: </div>
-                        <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>
-                      <div class="detail"> Damage Dealt: </div>
-                        <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>
-                      <div class="detail"> Damage Dealt: </div>
-                        <div class="stat"> {{playersOverall[0].total_damage|round(1, 'common')}} </div>  
+                    <div class="flexbox-container matchInfoContainer">
+                      <div class="flexbox-item playerMatchInfo leftPlayerMatchInfo">
+                        <div class="statWrapper">
+                          <div class="detail"> Kills: </div>
+                            <div class="stat"> {{ playersOverall[0].kill_count }} </div>
+                        </div>
+                        <div class="statWrapper">
+                          <div class="detail"> Openings Per Kill: </div>
+                            <div class="stat"> {{playersOverall[0].openings_per_kill|float|round(1, 'common')}} </div>
+                        </div>
+                        <div class="statWrapper">
+                          <div class="detail"> Damage Per Opening: </div>
+                            <div class="stat"> {{playersOverall[0].damage_per_opening|float|round(1, 'common')}} </div>
+                        </div>
+                        <div class="statWrapper">
+                          <div class="detail"> Damage Dealt: </div>
+                            <div class="stat"> {{playersOverall[0].total_damage|float|round(1, 'common')}} </div>
+                        </div>
+                      </div>
+                      <div class="flexbox-item playerMatchInfo rightPlayerMatchInfo">
+                        <div class="statWrapper">
+                          <div class="detail"> Kills: </div>
+                            <div class="stat"> {{ playersOverall[1].kill_count }} </div>
+                        </div>
+                        <div class="statWrapper">
+                          <div class="detail"> Openings Per Kill: </div>
+                            <div class="stat"> {{playersOverall[1].openings_per_kill}} </div>
+                        </div>
+                        <div class="statWrapper">
+                          <div class="detail"> Damage Per Opening: </div>
+                            <div class="stat"> {{playersOverall[1].damage_per_opening}} </div>
+                        </div>
+                        <div class="statWrapper">
+                          <div class="detail"> Damage Dealt: </div>
+                            <div class="stat"> {{playersOverall[1].total_damage|round(1, 'common')}} </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
