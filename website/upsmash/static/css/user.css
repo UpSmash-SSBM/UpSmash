@@ -21,6 +21,11 @@ background-color: #dfdfdf;
 
 .flexbox-container3 {
   background-color: #222222;
+  border-radius: .5rem;
+}
+
+.matchInfoContainer {
+  
 }
 
 .flexbox-container4 {
@@ -58,7 +63,7 @@ background-color: #dfdfdf;
 
 .flexbox-player {
   flex: 2 0 0;
-  background-color: #222222;
+  background-color: rgba(0,0,0,0);
   height: 20px;
   align-items: stretch;
   margin: 0;
@@ -71,6 +76,19 @@ background-color: #dfdfdf;
   border-bottom-left-radius: 4px;
 }
 
+.flexbox-player-middle {
+  text-align: center;
+}
+
+.flexbox-player-right {
+  text-align: right;
+}
+
+.playerMatchInfo {
+  flex: 2 0 0;
+  align-items: stretch;
+}
+
 .flexbox-item-second {
   min-height: 100px;
   flex-grow: 100%;
@@ -80,12 +98,17 @@ background-color: #dfdfdf;
 }
 
 .detail{
+  display: flex;
   font-size: 12px;
+  margin-left: 7px;
+  color: #878787;
 }
 
 .stat{
+  display: flex;
   font-size: 24px;
   margin-bottom: 5px;
+  margin-left: 7px;
 }
 
 .detailPanel{
@@ -95,15 +118,18 @@ background-color: #dfdfdf;
   border-bottom-right-radius: 4px;
 }
 
-
 #matchDetail{
-  margin-bottom: 5px;
   display: none;
+  height: 300px;
+  margin: 5px;
+  padding: 10px;
 }
 
 #detailWrapper{
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  height: 100%;
 }
 
 p {
@@ -115,13 +141,15 @@ div{
   display: block;
 }
 
-button{
+button.detailButton {
   border: 0;
   padding: 0;
   background: transparent;
   cursor: pointer;
   appearance: auto;
   display: inline-block;
+  width: 100%;
+  height: 100%;
 }
 
 /* Style the tab */
@@ -158,4 +186,9 @@ button{
   padding: 6px 12px;
   border: 1px solid #ccc;
   border-top: none;
+}
+
+
+.button:focus {
+  outline: none;
 }
