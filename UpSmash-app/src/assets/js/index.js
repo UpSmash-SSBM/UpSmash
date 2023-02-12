@@ -2,6 +2,19 @@ const electron = require('electron');
 const { ipcRenderer } = electron;
 const { SlippiGame } = require("@slippi/slippi-js");
 const { request } = require('http');
+const storage = require('electron-json-storage');
+const os = require('os');
+const { EventEmitter } = require('events');
+const fs = require("fs")
+const path = require("path")
+
+//initialize where to save user data
+storage.setDataPath(os.tmpdir());
+const dataPath = storage.getDataPath();
+
+
+
+  
 //function for determing who the local player is
 function get_local(fileList) {
     let codes = new Array();
@@ -95,9 +108,7 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
             fileSub.push(sub)
         }
     }
-    console.log(fileList)
     connect_local = get_local(fileList)
-    console.log(connect_local)
     let game_list = games_played(connect_local);
     game_list.then((value) => {
         let to_send_final = new Array()
@@ -105,13 +116,74 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
             return value.indexOf(item) == -1;
         });
         for (suffix in to_send) {
-            let attach = final + '/' + to_send[suffix] + '.slp'
+            let attach = final + to_send[suffix] + '.slp'
             to_send_final.push(attach)
         }
         console.log(to_send_final)
         if (fileList.length ==  event.target.files.length) {
             ipcRenderer.send("fileList", to_send_final)
             ipcRenderer.send("parentPath", final)
+            storage.set('folder', {userfolder: final}, function(error) {
+                if (error) throw error;
+            });
+            storage.set('files', {allFiles: to_send_final}, function(error) {
+                if (error) throw error;
+            });
         }; 
     })
 }, false);
+
+
+const exist_folder = storage.getSync('folder', function(error, data) {
+    if (error) throw error;
+  });
+  const exist_files = storage.getSync('files', function(error, data) {
+    if (error) throw error;
+  });
+console.log(exist_folder['userfolder'])
+console.log(exist_files['allFiles'])
+
+if (typeof exist_folder != "undefined") {
+
+    //fucntion to gtet all files in directory
+    const getAllFiles = function(dirPath, arrayOfFiles) {
+        files = fs.readdirSync(dirPath)
+        arrayOfFiles = arrayOfFiles || []
+        files.forEach(function(file) {
+        if (fs.statSync(dirPath + file).isDirectory()) {
+            arrayOfFiles = getAllFiles(dirPath + file, arrayOfFiles)
+        } else {
+            arrayOfFiles.push(path.join(dirPath, file))
+        }
+        })
+    
+        return arrayOfFiles
+    }
+
+    const result = getAllFiles(exist_folder['userfolder'])
+    console.log(result)
+    let to_send_default = result.filter(function(item) {
+        return exist_files['allFiles'].indexOf(item) == -1;
+    });
+    console.log(to_send_default)
+    ipcRenderer.send('defaultPath', exist_folder['userfolder'])
+    ipcRenderer.send('defaultList', to_send_default)
+    storage.set('folder', {userfolder: exist_folder['userfolder']}, function(error) {
+        if (error) throw error;
+    });
+    storage.set('files', {allFiles: to_send_default}, function(error) {
+        if (error) throw error;
+    });
+
+    //eventFire(document.getElementById('slpFolder'), 'change')
+}
+
+//function eventFire(element, event_type){
+//    if (element.fireEvent) {
+//        element.fireEvent('on' + event_type)
+//    } else {
+//        var eObj = new Event('change')
+//        element.dispatchEvent(eObj)
+//    }
+//}
+
