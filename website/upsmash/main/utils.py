@@ -89,7 +89,7 @@ def get_player_info(setting_players):
 def load_slippi_file(filename):
     full_filename = os.path.join('upsmash/static/json/', filename + '.json')
     if not os.path.exists(full_filename):
-        print("Slp file does not exist")
+        print("Slp json file does not exist")
         return False
     with open(full_filename) as f:
         try:
@@ -107,7 +107,10 @@ def load_slippi_file(filename):
         setting_players = settings['players']
         match_info = settings['matchInfo']
         match_id = match_info['matchId']
-        match_type = match_id.split('.')[1].split('-')[0].upper()
+        if match_id:
+            match_type = match_id.split('.')[1].split('-')[0].upper()
+        else:
+            match_type = None
         stage_id = StageID(settings['stageId'])
 
         new_players = []
@@ -149,11 +152,13 @@ def load_slippi_file(filename):
 def load_slippi_files(filename):
     subprocess.run(["node", "../slippi_js/to_json.js",filename])
     slp_path = os.path.join('upsmash/static/files/', filename)
-    os.remove(slp_path)
+    if os.path.exists(slp_path):
+        os.remove(slp_path)
     base_filename = filename.split('.')[0]
     load_slippi_file(base_filename)
     json_path = os.path.join('upsmash/static/json/', base_filename + '.json')
-    os.remove(json_path)
+    if os.path.exists(json_path):
+        os.remove(json_path)
 
 def refresh_all_ratings():
     print("Refreshing all ratings")

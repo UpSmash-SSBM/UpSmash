@@ -1,4 +1,4 @@
-let node_env = 'notproduction'
+let node_env = 'production'
 const setupEvents = require('./installers/setupEvents')
 if (setupEvents.handleSquirrelEvent()) {
    // squirrel event handled and app will exit in 1000ms, so don't do anything else
