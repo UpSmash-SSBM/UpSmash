@@ -24,13 +24,11 @@ background-color: #dfdfdf;
   border-radius: .5rem;
 }
 
-.matchInfoContainer {
-  
-}
 
 .flexbox-container4 {
   flex-direction: column;
   align-items: stretch;
+  margin-bottom: 15px;
 }
 
 .flexbox-item {
@@ -155,8 +153,10 @@ button.detailButton {
 /* Style the tab */
 .tab {
   overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
+  border: 0px solid #ccc;
+  background-color: #333333;
+  margin-left: 18px;
+  height: 40px;
 }
 
 /* Style the buttons that are used to open the tab content */
@@ -166,25 +166,33 @@ button.detailButton {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 14px 16px;
+  padding: 0px 16px;
   transition: 0.3s;
+  margin-left: 5px;
+  color: #ccc;
+  height: inherit;
+  border-radius: 4px;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
   background-color: #ddd;
+  border-radius: 4px;
+  color: #000000;
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
   background-color: #ccc;
+  border-radius: 4px;
+  color: #000000;
 }
 
 /* Style the tab content */
 .tabcontent {
   display: none;
   padding: 6px 12px;
-  border: 1px solid #ccc;
+  border: 0px solid #ccc;
   border-top: none;
 }
 

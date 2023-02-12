@@ -104,11 +104,11 @@
                         </div>
                         <div class="statWrapper">
                           <div class="detail"> Damage Per Opening: </div>
-                            <div class="stat"> {{playersOverall[1].damage_per_opening}} </div>
+                            <div class="stat"> {{playersOverall[1].damage_per_opening|float|round(1, 'common')}} </div>
                         </div>
                         <div class="statWrapper">
                           <div class="detail"> Damage Dealt: </div>
-                            <div class="stat"> {{playersOverall[1].total_damage|round(1, 'common')}} </div>
+                            <div class="stat"> {{playersOverall[1].total_damage|float|round(1, 'common')}} </div>
                         </div>
                       </div>
                     </div>
