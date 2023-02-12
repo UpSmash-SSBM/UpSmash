@@ -14,7 +14,7 @@
   "author": "UpSmash",
   "license": "MIT",
   "dependencies": {
-    "@slippi/slippi-js": "^6.6.0",
+    "@slippi/slippi-js": "^6.6.1",
     "chokidar": "^3.5.3",
     "electron-squirrel-startup": "^1.0.0",
     "form-data": "^4.0.0",

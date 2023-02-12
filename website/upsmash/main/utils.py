@@ -3,10 +3,8 @@ import subprocess
 import os
 from bs4 import BeautifulSoup
 import time
-from selenium.webdriver.firefox.options import Options
 import json
 from sqlalchemy import or_
-from selenium import webdriver
 from multiprocessing import Process
 from upsmash.models import Player, SlippiReplay, SlippiActionCounts, SlippiOverall, MeleeCharacters, SlippiReplayPlayerInfo
 from upsmash import db
@@ -196,9 +194,9 @@ def get_top_50_players():
 
 def upload(request):
     files = request.files
-    for new_file in files.values():
-        filename = new_file.filename
-        new_file.save(os.path.join('upsmash/static/files/', filename))
+    for new_file_key, new_file_value in files.items(True):
+        filename = new_file_value.filename
+        new_file_value.save(os.path.join('upsmash/static/files/', filename))
         #load_slippi_files(filename)
         proc = Process(target=load_slippi_files, args=(filename,))
         proc.start()

@@ -95,7 +95,7 @@
     </div>
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/user.js/') }}"></script>
+<script src="{{ url_for('static', filename='js/user.js') }}"></script>
 <script>
 // Get the element with id="defaultOpen" and click on it
 document.getElementById("defaultOpen").click();
@@ -107,5 +107,5 @@ const datapoints = [
       {% endfor %}
 ];
 </script>
-<script src="{{ url_for('static', filename='js/elo_graph.js/') }}"></script>
+<script src="{{ url_for('static', filename='js/elo_graph.js') }}"></script>
 {% endblock %}
