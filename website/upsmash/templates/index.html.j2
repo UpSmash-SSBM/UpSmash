@@ -19,7 +19,7 @@
       </form>
     </div>
       <br>
-      <div class="flexCenter flexCenterText" >
+      <div class="flexCenter flexCenterText">
         <div id="dropzone" class="dropzone dz-clickable">
           <div id="dropzoneMessage" class="dz-message" data-dz-message><span><p>Or upload some Slippi files<br>
             You can usually find it at: "C:/Users/&lt;username&gt;/Documents/Slippi"<br>
@@ -28,7 +28,9 @@
       </div>
       <div class="flexCenter flexCenterText">
         <br><br><br>
-        <h4><a href="{{ url_for('static', filename='installers/UpSmashInstaller.exe') }}" download>Download the Desktop App</a></h4>
+        <h4><a href="{{ url_for('static', filename='installers/UpSmashInstaller.exe') }}" download>Download the Desktop App</a>
+          <a href="https://discord.gg/e2387s8neq"> <img src="{{ url_for('static', filename='images/discord.png') }}" height="60">   </a>
+        </h4>
       </div>
       {% if na_players | length == 10 and eu_players | length == 10 and other_players | length == 10 %}
       <div class="flexbox-container flexbox-container1">

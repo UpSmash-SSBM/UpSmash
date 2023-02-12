@@ -1,4 +1,11 @@
 
+$(document).ready(function() {
+  $(document).on("click",".detailButton",function() {
+      var parent = $(this).parents('#match').first();
+      var child = parent.find("#matchDetail");
+      child.toggle()
+  });
+});
 
 function openTab(evt, tabName) {
   // Declare all variables

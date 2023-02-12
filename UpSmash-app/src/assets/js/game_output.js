@@ -11,6 +11,7 @@ let player1_name, player1_wins, player1_code, player1_rating;
 let player2_name, player2_wins, player2_code, player2_rating;
 player1_wins = 0;
 player2_wins = 0;
+let player_array = new Array();
 
 document.getElementById("slpFolder").addEventListener("change", (event) => {
     //console.log('caught event')
@@ -40,10 +41,19 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
         player2_name = players[1]['displayName']
         player2_code = players[1]['connectCode']
 
+        let current_player_array = new Array(player1_code, player2_code);
+        current_player_array.sort();
+        if (current_player_array[0] != player_array[0] || current_player_array[1] != player_array[1]) {
+            player1_wins = 0;
+            player2_wins = 0;
+            player_array = current_player_array;
+            console.log('new session')
+        }
+
         if (!gameInProgress) {
-            player1_rating = rating(player1_code).then()
-            player2_rating = rating(player2_code).then()
-            console.log(player1_rating)
+            //player1_rating = rating(player1_code).then()
+            //player2_rating = rating(player2_code).then()
+            //console.log(player1_rating)
         }
         gameInProgress = true;
 

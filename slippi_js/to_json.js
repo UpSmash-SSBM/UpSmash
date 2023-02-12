@@ -15,10 +15,15 @@ const settings = game.getSettings();
 const metadata = game.getMetadata();
 const stats = game.getStats();
 const winner = game.getWinners();
+let winner_index = null;
+let winner_tag = null;
 // console.log(winner[0]);
-const winner_index = winner[0]['playerIndex']
+if (winner && winner.length > 0) {
+    winner_index = winner[0]['playerIndex'];
+    winner_tag = settings['players'][winner_index]['connectCode']
+}
+
 // console.log(winner[0]['playerIndex']);
-const winner_tag = settings['players'][winner_index]['connectCode']
 //console.log(winner_tag);
 // console.log(stats['overall']);
 let new_json = {'settings': settings,'metadata':metadata,'stats':stats,'winner':winner_tag};

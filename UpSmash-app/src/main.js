@@ -46,12 +46,12 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-ipcMain.on('fileList', function(e, item){
-  file_submit(item)
+ipcMain.on('fileList', function(e, filesToSubmit){
+  file_submit(filesToSubmit);
 });
 
 ipcMain.on('parentPath', function(e, item) {  
-  game_checker(item)
+  game_checker(item);
 });
 
 // Create menu template 

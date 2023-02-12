@@ -37,6 +37,37 @@ class MatchType(enum.Enum):
     UNRANKED = 1
     DIRECT = 2
 
+class StageID(enum.Enum):
+    FOUNTAIN = 2
+    STADIUM = 3
+    PEACH_CASTLE = 4
+    KONGO_JUNGLE = 5
+    BRINSTAR = 6
+    CORNERIA = 7
+    YOSHIS = 8
+    ONETT = 9
+    MUTE_CITY = 10
+    RAINBOW_CRUISE = 11
+    JUNGLE_JAPES = 12
+    GREAT_BAY = 13
+    TEMPLE = 14
+    BRINSTAR_DEPTHS = 15
+    YOSHIS_ISLAND = 16
+    GREEN_GREENS = 17
+    FOURSIDE = 18
+    MUSHROOM_KINGDOM = 19
+    MUSHROOM_KINGDOM2 = 20
+    VENOM = 22
+    POKE_FLOATS = 23
+    BIG_BLUE = 24
+    ICE_MOUNTAIN = 25
+    FLAT_ZONE = 27
+    DREAMLAND = 28
+    OLD_YOSHIS_ISLAND = 29
+    OLD_KONGO_JUNGLE = 30
+    BATTLEFIELD = 31
+    FINAL_DESTINATION = 32
+
     def __str__(self):
         return self.name
 
@@ -106,6 +137,7 @@ class SlippiReplay(db.Model):
     winner_id = db.Column(db.Integer, db.ForeignKey("player.id"))
     winner = db.relationship("Player", foreign_keys=[winner_id], backref=db.backref("winner_replay", uselist=False))
     game_type = db.Column(db.Enum(MatchType))
+    stage_id = db.Column(db.Enum(StageID))
     datetime = db.Column(db.DateTime)
 
     def get_player(self, player_id):
