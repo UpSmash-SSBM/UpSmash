@@ -24,6 +24,10 @@ background-color: #dfdfdf;
   border-radius: .5rem;
 }
 
+.matchInfoContainer {
+  
+}
+
 .flexbox-container4 {
   flex-direction: column;
   align-items: stretch;
@@ -80,6 +84,11 @@ background-color: #dfdfdf;
   text-align: right;
 }
 
+.playerMatchInfo {
+  flex: 2 0 0;
+  align-items: stretch;
+}
+
 .flexbox-item-second {
   min-height: 100px;
   flex-grow: 100%;
@@ -109,12 +118,11 @@ background-color: #dfdfdf;
   border-bottom-right-radius: 4px;
 }
 
-
-
 #matchDetail{
-  margin-bottom: 5px;
   display: none;
   height: 300px;
+  margin: 5px;
+  padding: 10px;
 }
 
 #detailWrapper{
@@ -133,7 +141,7 @@ div{
   display: block;
 }
 
-button{
+button.detailButton {
   border: 0;
   padding: 0;
   background: transparent;
