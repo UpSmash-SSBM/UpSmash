@@ -10,6 +10,11 @@
 
 {% set title=username %}
 
+<!-- 
+  win color: Pakistan Green: Hex: #007000, RGB: (0, 112, 0)
+  loss color: Amaranth Red: Hex: #D2222D, RGB: (210, 34, 45)
+-->
+
 {% block body %}
 <div class="content">
   <div class="flexbox-container flexbox-container1 ">
@@ -43,8 +48,12 @@
                 {% set win = replay.winner_id == player.id %}
                 {% set playersOverall = replay.get_player_overall_ordered(player.id)%}
                 {% set players = replay.get_players_ordered(player.id)%}
-                <div class="flexbox-item flexbox-item-second" id="match"style="background-image: url({{ url_for('static', filename='images/stages/' + (replay.stage_id |lower | string) + '.png') }}); background-size: cover">
-                  <div class="flexbox-container flexbox-container3" style="background-color: {% if win  %}rgba(0, 100, 0, 0.5){% else %}rgba(100, 0, 0, 0.5){% endif %}">
+                <!--<div class="flexbox-item flexbox-item-second" id="match"style="background-image: url({{ url_for('static', filename='images/stages/' + (replay.stage_id | string) + '.png') }}); background-size: cover">-->
+                <div class="flexbox-item flexbox-item-second" id="match">
+                  <div class="flexbox-container flexbox-container3" style="background-image: 
+                      {% if win  %}linear-gradient(to right, rgba(0, 112, 0, 1.00), rgba(0, 112, 0, 0.10)), url({{ url_for('static', filename='images/stages/' + (replay.stage_id|lower | string) + '.png') }}); 
+                      {% else %}  linear-gradient(to right, rgba(210, 34, 45, 1.00), rgba(0, 112, 0, 0.10)), url({{ url_for('static', filename='images/stages/' + (replay.stage_id |lower | string) + '.png') }});
+                      {%endif%} background-size: cover">
                     <div class="flexbox-item flexbox-player flexbox-player-left">
                       <h5>{{ playersOverall[0].player.username }}
                       <img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[0].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px"></h5>
@@ -56,8 +65,10 @@
                       <h5><img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[1].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px">
                       {{ playersOverall[1].player.username }}</h5>
                     </div>
-                    <div class="detailPanel">
-                      <button class="detailButton"></button>
+                    <div class="detailPanel" style="background-color: 
+                      {% if win  %} #444444;
+                      {% else %} #444444; {% endif %}">
+                      <button class="detailButton"><h5>+</h5></button>
                     </div>
                   </div>
 
@@ -88,15 +99,15 @@
                         </div>
                         <div class="statWrapper">
                           <div class="detail"> Openings Per Kill: </div>
-                            <div class="stat"> {{playersOverall[1].openings_per_kill}} </div>
+                            <div class="stat"> {{playersOverall[1].openings_per_kill|float|round(1, 'common')}} </div>
                         </div>
                         <div class="statWrapper">
                           <div class="detail"> Damage Per Opening: </div>
-                            <div class="stat"> {{playersOverall[1].damage_per_opening}} </div>
+                            <div class="stat"> {{playersOverall[1].damage_per_opening|float|round(1, 'common')}} </div>
                         </div>
                         <div class="statWrapper">
                           <div class="detail"> Damage Dealt: </div>
-                            <div class="stat"> {{playersOverall[1].total_damage|round(1, 'common')}} </div>
+                            <div class="stat"> {{playersOverall[1].total_damage|float|round(1, 'common')}} </div>
                         </div>
                       </div>
                     </div>
