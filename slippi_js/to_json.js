@@ -15,6 +15,10 @@ const settings = game.getSettings();
 const metadata = game.getMetadata();
 const stats = game.getStats();
 const winner = game.getWinners();
+// console.log(winner)
+const gameEnd = game.getGameEnd();
+// console.log(gameEnd)
+// console.log(gameEnd['placements'])
 let winner_index = null;
 let winner_tag = null;
 // console.log(winner[0]);

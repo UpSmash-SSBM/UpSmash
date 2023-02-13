@@ -58,7 +58,7 @@
                       <img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[0].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px"></h5>
                     </div>
                     <div class="flexbox-item flexbox-player flexbox-player-middle">
-                      <h5>{{ replay.datetime.strftime('%m/%d/%Y - %H:%M') }}</h5>
+                      <h5>{{ replay.datetime.strftime('%m/%d/%Y - %I:%M %p') }}</h5>
                     </div>
                     <div class="flexbox-item flexbox-player flexbox-player-right">
                       <h5><img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[1].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px">
@@ -134,7 +134,7 @@ document.getElementById("defaultOpen").click();
 <script>
 const datapoints = [
       {% for row in data_items %}
-      {x: new Date('{{ row[0] | safe }}'), y: {{ row[1] | safe }} },
+      {x: new Date('{{ row[0] | safe }}+00:00'), y: {{ row[1] | safe }} },
       {% endfor %}
 ];
 </script>

@@ -21,7 +21,7 @@ def user(connect_code):
     player_ratings = PlayerRating.query.filter_by(player_id=player.id).order_by(PlayerRating.datetime).all() #.limit(10)
     data_items = []
     for rating in player_ratings:
-        data_items.append([rating.datetime.strftime("%Y-%m-%dT%H:%M:%S"), int(rating.rating)])
+        data_items.append([rating.datetime, int(rating.rating)])
     
     total_games = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).count()
     unranked_wins = SlippiReplay.query.filter_by(winner_id=player.id).filter_by(game_type=MatchType.UNRANKED).count()

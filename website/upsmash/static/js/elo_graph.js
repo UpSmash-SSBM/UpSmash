@@ -18,7 +18,10 @@ options: {
       time: {
           unit: 'day'
       },
-      offset: true
+      offset: true,
+      parser: function(date) {
+        return date.toLocaleSTring();
+      }
     },
     y: {
       beginAtZero: false

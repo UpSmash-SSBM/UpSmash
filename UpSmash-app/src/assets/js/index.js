@@ -90,7 +90,7 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
     let localFileIDs = new Array();
     for (const file of event.target.files){
         if (file.path.includes('slp')) {
-            console.log(file.path)
+            //console.log(file.path)
             localFileList.push(file.path);
             let splitFilePath = file.path.split('\\')
             let slippiReplayName = splitFilePath[splitFilePath.length - 1]

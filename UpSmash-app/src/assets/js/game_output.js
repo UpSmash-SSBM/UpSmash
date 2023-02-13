@@ -35,6 +35,7 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
         let game = new SlippiGame(path, { processOnTheFly: true });
         let gameEnd = game.getGameEnd();
         let settings = game.getSettings();
+        
         players = settings['players']
         player1_name = players[0]['displayName']
         player1_code = players[0]['connectCode']
@@ -58,8 +59,11 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
         }
 
         if (gameEnd) {
-            player1_wins += gameEnd['placements'][0]['position']
-            player2_wins += gameEnd['placements'][1]['position']
+            if (gameEnd['placements'][0]['position'] == 0) {
+                player1_wins += 1
+            } else {
+                player2_wins += 1
+            }
         }
     });
 })
@@ -68,7 +72,7 @@ function waitingText() {
     if (periodCount > 3) {
         periodCount = 0
     }
-    startingText = 'Waiting on game'
+    startingText = 'Waiting for a game to start'
     for (let periodNum=0; periodNum<periodCount; periodNum++){
         startingText += '.'
     }
@@ -78,9 +82,9 @@ function waitingText() {
 }
 
 function checkForGame() {
-    if (!isFolderSet || !hasGameStarted) {
+    if (isFolderSet && !hasGameStarted) {
         waitingText()
-    } else {
+    } else if (isFolderSet && hasGameStarted) {
         let newString = player1_name + ' (' + player1_code + ') ' + ' ' + player1_wins + '-' + player2_wins + ' ' + player2_name + ' (' + player2_code + ') '
         document.getElementById("waitingText").textContent = newString;
     }
