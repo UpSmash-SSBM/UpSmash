@@ -81,7 +81,7 @@ def get_player_info(setting_players):
         player_info = SlippiReplayPlayerInfo(character=player_character,characterColor=player_color)
         db.session.add(player_info)
         db.session.commit()
-        new_player_info.append(player_info)
+        new_player_info.append(player_info.id)
     return new_player_info
 
 def load_slippi_file(filename):
@@ -128,17 +128,17 @@ def load_slippi_file(filename):
                 return False
             if connect_code == winner:
                 winner_id = current_player.id
-            new_players.append(current_player)
+            new_players.append(current_player.id)
         #print("PLAYERS: " + str(new_players))
-        if not SlippiReplay.query.filter_by(filename=filename,player1_id=new_players[0].id,player2_id=new_players[1].id).first(): #add test to make sure not already exists
+        if not SlippiReplay.query.filter_by(filename=filename,player1_id=new_players[0],player2_id=new_players[1]).first(): #add test to make sure not already exists
             players_info = get_player_info(setting_players)
             
             slippi_datetime = filename[5:20]
             slp_datetime = datetime.strptime(slippi_datetime, '%Y%m%dT%H%M%S')
             #print("slippidatetime: " + slippi_datetime)
-            new_slippi_replay = SlippiReplay(filename=filename,player1_id=new_players[0].id,
-                player2_id=new_players[1].id, winner_id=winner_id, datetime=slp_datetime,player1_info_id=players_info[0].id,
-                player2_info_id=players_info[1].id, game_type=match_type, stage_id=stage_id
+            new_slippi_replay = SlippiReplay(filename=filename,player1_id=new_players[0],
+                player2_id=new_players[1], winner_id=winner_id, datetime=slp_datetime,player1_info_id=players_info[0],
+                player2_info_id=players_info[1], game_type=match_type, stage_id=stage_id
             )
             
             db.session.add(new_slippi_replay)
@@ -203,7 +203,7 @@ def upload(request):
     for new_file_key, new_file_value in files.items(True):
         filename = new_file_value.filename
         new_file_value.save(os.path.join('upsmash/static/files/', filename))
-        #load_slippi_files(filename)
-        proc = Process(target=load_slippi_files, args=(filename,))
-        proc.start()
+        load_slippi_files(filename)
+        #proc = Process(target=load_slippi_files, args=(filename,))
+        #proc.start()
     return 'Processing files'
