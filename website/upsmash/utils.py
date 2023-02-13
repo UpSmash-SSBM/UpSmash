@@ -61,8 +61,8 @@ def check_if_player_rating_is_current(player):
     if not player_rating:
         #print("No ratings")
         return False
-    time_5_minutes_ago = datetime.now() - timedelta(minutes=5)
-    return player_rating.datetime > time_5_minutes_ago
+    time_2_minutes_ago = datetime.now() - timedelta(minutes=2)
+    return player_rating.datetime > time_2_minutes_ago
 
 def refresh_player_rating(player, rating=None):
     if check_if_player_rating_is_current(player):
@@ -72,10 +72,12 @@ def refresh_player_rating(player, rating=None):
         rating = ranked_info['ratingOrdinal']
         wins = ranked_info['wins']
         losses = ranked_info['losses']
-        player.ranked_wins=wins
-        player.ranked_losses=losses
+        player.ranked_wins = wins
+        player.ranked_losses = losses
+    print(str(rating) + " = " + player.current_rating)
     if rating == player.current_rating: #Don't want to add new datapoint if rating hasn't changed
         return False
+    
     player_rating = PlayerRating(player_id=player.id, rating=rating, datetime=datetime.now())
     player.current_rating = rating
     db.session.add(player_rating)
