@@ -68,7 +68,12 @@ def refresh_player_rating(player, rating=None):
     if check_if_player_rating_is_current(player):
         return False
     if not rating:
-        rating = get_slippi_rating(player.connect_code)
+        ranked_info = get_slippi_info(player.connect_code)["rankedNetplayProfile"]
+        rating = ranked_info['ratingOrdinal']
+        wins = ranked_info['wins']
+        losses = ranked_info['losses']
+        player.ranked_wins=wins
+        player.ranked_losses=losses
     if rating == player.current_rating: #Don't want to add new datapoint if rating hasn't changed
         return False
     player_rating = PlayerRating(player_id=player.id, rating=rating, datetime=datetime.now())

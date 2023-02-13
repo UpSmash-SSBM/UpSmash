@@ -22,7 +22,7 @@ async function file_submit(filesToSend) {
         let end_num = batchStartNum + batchLength;
         for (var current_num = batchStartNum; current_num < end_num && current_num < length; current_num++) {
             //console.log(current_num)
-            //console.log(filesToSend[current_num])
+            console.log(filesToSend[current_num])
             const readStream = fs.createReadStream(filesToSend[current_num]);
             let readStreamSplitPath = readStream['path'].split('\\')
             form.append(readStreamSplitPath[readStreamSplitPath.length - 1], readStream);
