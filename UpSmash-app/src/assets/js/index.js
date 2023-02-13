@@ -4,15 +4,12 @@ const { SlippiGame } = require("@slippi/slippi-js");
 const { request } = require('http');
 const storage = require('electron-json-storage');
 const os = require('os');
-const { EventEmitter } = require('events');
 const fs = require("fs")
 const path = require("path")
 
 //initialize where to save user data
 storage.setDataPath(os.tmpdir());
 const dataPath = storage.getDataPath();
-
-
 
   
 //function for determing who the local player is
@@ -45,6 +42,7 @@ function get_local(fileList) {
     }
     return item
 }
+
 // function for getting a list of players games
 async function games_played(connect_code) {
     const game_options = {
@@ -123,6 +121,8 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
         if (fileList.length ==  event.target.files.length) {
             ipcRenderer.send("fileList", to_send_final)
             ipcRenderer.send("parentPath", final)
+            console.log(final)
+            gameInfo(final) 
             storage.set('folder', {userfolder: final}, function(error) {
                 if (error) throw error;
             });
@@ -140,11 +140,8 @@ const exist_folder = storage.getSync('folder', function(error, data) {
   const exist_files = storage.getSync('files', function(error, data) {
     if (error) throw error;
   });
-console.log(exist_folder['userfolder'])
-console.log(exist_files['allFiles'])
 
 if (typeof exist_folder != "undefined") {
-
     //fucntion to gtet all files in directory
     const getAllFiles = function(dirPath, arrayOfFiles) {
         files = fs.readdirSync(dirPath)
@@ -161,29 +158,18 @@ if (typeof exist_folder != "undefined") {
     }
 
     const result = getAllFiles(exist_folder['userfolder'])
-    console.log(result)
     let to_send_default = result.filter(function(item) {
         return exist_files['allFiles'].indexOf(item) == -1;
     });
-    console.log(to_send_default)
-    ipcRenderer.send('defaultPath', exist_folder['userfolder'])
-    ipcRenderer.send('defaultList', to_send_default)
+
+    ipcRenderer.send("parentPath", exist_folder['userfolder'])
+    ipcRenderer.send("fileList", to_send_default)
+    gameInfo(exist_folder['userfolder']) 
     storage.set('folder', {userfolder: exist_folder['userfolder']}, function(error) {
         if (error) throw error;
     });
     storage.set('files', {allFiles: to_send_default}, function(error) {
         if (error) throw error;
     });
-
-    //eventFire(document.getElementById('slpFolder'), 'change')
 }
-
-//function eventFire(element, event_type){
-//    if (element.fireEvent) {
-//        element.fireEvent('on' + event_type)
-//    } else {
-//        var eObj = new Event('change')
-//        element.dispatchEvent(eObj)
-//    }
-//}
 

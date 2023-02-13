@@ -45,14 +45,6 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-ipcMain.on('defaultList', function(e, item){
-  file_submit(item)
-});
-
-ipcMain.on('defaultPath', function(e, item){
-  game_checker(item)
-})
-
 ipcMain.on('fileList', function(e, item){
   file_submit(item)
 });
