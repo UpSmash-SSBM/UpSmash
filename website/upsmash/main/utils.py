@@ -164,40 +164,6 @@ def refresh_all_ratings():
     for player in players:
         refresh_player_rating(player)
 
-def top_50_players_thread():
-    print("Refreshing top 50 players")
-    #players = get_top_50_players()
-    with open('player_list.json') as f:
-        players = json.load(f)
-    #print(players)
-    for player in players:
-        #print(player)
-        connect_code = player[1]
-        current_player = Player.query.filter_by(connect_code=connect_code).first()
-        if not current_player:
-                current_player = create_new_player(connect_code)
-
-def get_top_50_players():
-    top_50_players = []
-    url = "https://slippi.gg/leaderboards?region="
-    regions = ['na', 'eu', 'other']
-    options = Options()
-    options.add_argument("--headless")
-    driver = webdriver.Firefox(options=options)
-    for region in regions:
-        driver.get(url + region)
-        time.sleep(2)
-        html = driver.page_source
-        soup = BeautifulSoup(html, 'html.parser')
-        rows = soup.find("table").find("tbody").find_all("tr")
-        for row in rows:
-            cells = row.find_all("td")
-            player_name = cells[2].find("a").get_text()
-            player_tag = cells[2].find("p").get_text()
-            top_50_players.append((player_name, player_tag))
-    driver.close()
-    return top_50_players
-
 def upload(request):
     files = request.files
     for new_file_key, new_file_value in files.items(True):

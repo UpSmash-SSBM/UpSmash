@@ -1,6 +1,6 @@
 from upsmash.utils import refresh_player_rating
 from flask import render_template, redirect, request, Blueprint
-from upsmash.models import PlayerRating, Player, SlippiReplay
+from upsmash.models import PlayerRating, Player, SlippiReplay, MatchType
 from upsmash.utils import get_player_or_abort, get_safe_connect_code, get_real_connect_code
 from upsmash.users.utils import get_rank_icon, get_rank
 
@@ -24,8 +24,8 @@ def user(connect_code):
         data_items.append([rating.datetime.strftime("%Y-%m-%dT%H:%M:%S"), int(rating.rating)])
     
     total_games = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).count()
-    wins = SlippiReplay.query.filter_by(winner_id=player.id).count()
-    losses = total_games - wins
+    wins = SlippiReplay.query.filter_by(winner_id=player.id).filter_by(game_type=MatchType.UNRANKED).count()
+    losses = SlippiReplay.query.filter(SlippiReplay.winner_id != player.id).filter_by(game_type=MatchType.UNRANKED).count()
     slippi_replays = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).order_by(SlippiReplay.datetime.desc())
     games = [
         {
