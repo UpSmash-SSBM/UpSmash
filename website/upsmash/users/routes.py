@@ -24,8 +24,9 @@ def user(connect_code):
         data_items.append([rating.datetime.strftime("%Y-%m-%dT%H:%M:%S"), int(rating.rating)])
     
     total_games = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).count()
-    wins = SlippiReplay.query.filter_by(winner_id=player.id).filter_by(game_type=MatchType.UNRANKED).count()
-    losses = SlippiReplay.query.filter(SlippiReplay.winner_id != player.id).filter_by(game_type=MatchType.UNRANKED).count()
+    unranked_wins = SlippiReplay.query.filter_by(winner_id=player.id).filter_by(game_type=MatchType.UNRANKED).count()
+    total_unranked_games = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).filter_by(game_type=MatchType.UNRANKED).count()
+    unranked_losses = total_unranked_games - unranked_wins
     slippi_replays = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).order_by(SlippiReplay.datetime.desc())
     games = [
         {
@@ -49,8 +50,8 @@ def user(connect_code):
         "rank": get_rank(player.current_rating),
         "data_items": data_items,
         "total_games": total_games,
-        "wins": wins,
-        "losses": losses,
+        "wins": unranked_wins,
+        "losses": unranked_losses,
         "games": games,
         "slippi_replays": list(slippi_replays),
     }

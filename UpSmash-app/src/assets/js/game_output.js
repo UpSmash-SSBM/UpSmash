@@ -3,7 +3,7 @@ const { rating } = require('./js_utils/game_watcher.js');
 
 setInterval(checkForGame, 500); 
 let periodCount = 0;
-let gameInProgress = false;
+let hasGameStarted = false;
 let isFolderSet = false;
 let parentFolder;
 
@@ -50,17 +50,16 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
             console.log('new session')
         }
 
-        if (!gameInProgress) {
+        if (!hasGameStarted) {
+            hasGameStarted = true;
             //player1_rating = rating(player1_code).then()
             //player2_rating = rating(player2_code).then()
             //console.log(player1_rating)
         }
-        gameInProgress = true;
 
         if (gameEnd) {
             player1_wins += gameEnd['placements'][0]['position']
             player2_wins += gameEnd['placements'][1]['position']
-            gameInProgress = false;
         }
     });
 })
@@ -79,9 +78,9 @@ function waitingText() {
 }
 
 function checkForGame() {
-    if (isFolderSet && !gameInProgress) {
+    if (!isFolderSet || !hasGameStarted) {
         waitingText()
-    } else if (isFolderSet && gameInProgress) {
+    } else {
         let newString = player1_name + ' (' + player1_code + ') ' + ' ' + player1_wins + '-' + player2_wins + ' ' + player2_name + ' (' + player2_code + ') '
         document.getElementById("waitingText").textContent = newString;
     }
