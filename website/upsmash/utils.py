@@ -61,8 +61,8 @@ def check_if_player_rating_is_current(player):
     if not player_rating:
         #print("No ratings")
         return False
-    time_5_minutes_ago = datetime.now() - timedelta(minutes=5)
-    return player_rating.datetime > time_5_minutes_ago
+    time_2_minutes_ago = datetime.now() - timedelta(minutes=2)
+    return player_rating.datetime > time_2_minutes_ago
 
 def refresh_player_rating(player, rating=None):
     #if check_if_player_rating_is_current(player):
@@ -76,6 +76,7 @@ def refresh_player_rating(player, rating=None):
         player.ranked_losses=losses
     if player.current_rating and round(rating,1) == round(player.current_rating,1): #Don't want to add new datapoint if rating hasn't changed
         return False
+    
     player_rating = PlayerRating(player_id=player.id, rating=rating, datetime=datetime.now())
     player.current_rating = rating
     db.session.add(player_rating)
