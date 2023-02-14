@@ -119,10 +119,10 @@ document.getElementById("slpFolder").addEventListener("change", (event) => {
         }
         console.log(to_send_final)
         if (fileList.length ==  event.target.files.length) {
+            gameInfo(final)
             ipcRenderer.send("fileList", to_send_final)
             ipcRenderer.send("parentPath", final)
-            console.log(final)
-            gameInfo(final) 
+            console.log(final) 
             storage.set('folder', {userfolder: final}, function(error) {
                 if (error) throw error;
             });
@@ -161,13 +161,13 @@ if (typeof exist_folder != "undefined") {
     let to_send_default = result.filter(function(item) {
         return exist_files['allFiles'].indexOf(item) == -1;
     });
+    gameInfo(exist_folder['userfolder']) 
     let output = document.getElementById("listing");
     let item = document.createElement("li");
     item.textContent = exist_folder['userfolder'];
     output.appendChild(item);
     ipcRenderer.send("parentPath", exist_folder['userfolder'])
     ipcRenderer.send("fileList", to_send_default)
-    gameInfo(exist_folder['userfolder']) 
     storage.set('folder', {userfolder: exist_folder['userfolder']}, function(error) {
         if (error) throw error;
     });

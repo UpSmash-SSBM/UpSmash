@@ -1,37 +1,19 @@
 const chokidar = require('chokidar');
 const { rating } = require('./js_utils/game_watcher');
 
-function gameInfo(parentFolder) {
-    let periodCount = 0;
-    let gameInProgress = false;
-    let isFolderSet = false;
-    let player1_name, player1_wins, player1_code, player1_rating;
-    let player2_name, player2_wins, player2_code, player2_rating;
-    player1_wins = 0;
-    player2_wins = 0;
-    isFolderSet = true;
-    function waitingText() {
-        if (periodCount > 3) {
-            periodCount = 0
-        }
-        startingText = 'Waiting on game'
-        for (let periodNum=0; periodNum<periodCount; periodNum++){
-            startingText += '.'
-        }
-        document.getElementById("waitingText").textContent = startingText
-    
-        periodCount += 1
-    }
-    
-    function checkForGame() {
-        if (isFolderSet && !gameInProgress) {
-            waitingText()
-        } else if (isFolderSet && gameInProgress) {
-            let newString = player1_name + ' (' + player1_code + ') ' + ' ' + player1_wins + '-' + player2_wins + ' ' + player2_name + ' (' + player2_code + ') '
-            document.getElementById("waitingText").textContent = newString;
-        }
-    }
-    setInterval(checkForGame(isFolderSet), 500); 
+setInterval(checkForGame, 500); 
+
+let periodCount = 0;
+let gameInProgress = false;
+let isFolderSet = false;
+
+let player1_name, player1_wins, player1_code, player1_rating;
+let player2_name, player2_wins, player2_code, player2_rating;
+player1_wins = 0;
+player2_wins = 0;
+
+function gameInfo(parentFolder) { 
+    isFolderSet = true; 
     const watcher = chokidar.watch(parentFolder, {
         ignored: '/*.slp', // TODO: This doesn't work. Use regex?
         depth: 0,
@@ -69,4 +51,24 @@ function gameInfo(parentFolder) {
     });
 }
 
+function waitingText() {
+    if (periodCount > 3) {
+        periodCount = 0
+    }
+    startingText = 'Waiting on game'
+    for (let periodNum=0; periodNum<periodCount; periodNum++){
+        startingText += '.'
+    }
+    document.getElementById("waitingText").textContent = startingText
+    periodCount += 1
+}
+
+function checkForGame() {
+    if (isFolderSet && !gameInProgress) {
+        waitingText()
+    } else if (isFolderSet && gameInProgress) {
+        let newString = player1_name + ' (' + player1_code + ') ' + ' ' + player1_wins + '-' + player2_wins + ' ' + player2_name + ' (' + player2_code + ') '
+        document.getElementById("waitingText").textContent = newString;
+    }
+}
 module.exports = { gameInfo };
