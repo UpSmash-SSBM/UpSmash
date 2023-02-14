@@ -161,7 +161,10 @@ if (typeof exist_folder != "undefined") {
     let to_send_default = result.filter(function(item) {
         return exist_files['allFiles'].indexOf(item) == -1;
     });
-
+    let output = document.getElementById("listing");
+    let item = document.createElement("li");
+    item.textContent = exist_folder['userfolder'];
+    output.appendChild(item);
     ipcRenderer.send("parentPath", exist_folder['userfolder'])
     ipcRenderer.send("fileList", to_send_default)
     gameInfo(exist_folder['userfolder']) 
