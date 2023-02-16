@@ -65,17 +65,16 @@ def check_if_player_rating_is_current(player):
     return player_rating.datetime > time_2_minutes_ago
 
 def refresh_player_rating(player, rating=None):
-    if check_if_player_rating_is_current(player):
-        return False
+    #if check_if_player_rating_is_current(player):
+    #    return False
     if not rating:
         ranked_info = get_slippi_info(player.connect_code)["rankedNetplayProfile"]
         rating = ranked_info['ratingOrdinal']
         wins = ranked_info['wins']
         losses = ranked_info['losses']
-        player.ranked_wins = wins
-        player.ranked_losses = losses
-    
-    if rating == player.current_rating: #Don't want to add new datapoint if rating hasn't changed
+        player.ranked_wins=wins
+        player.ranked_losses=losses
+    if player.current_rating and round(rating,1) == round(player.current_rating,1): #Don't want to add new datapoint if rating hasn't changed
         return False
     
     player_rating = PlayerRating(player_id=player.id, rating=rating, datetime=datetime.now())
