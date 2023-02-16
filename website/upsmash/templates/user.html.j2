@@ -40,6 +40,7 @@
             <button class="tablinks" onclick="openTab(event, 'ranked')" id="defaultOpen">Ranked</button>
             <button class="tablinks" onclick="openTab(event, 'unranked')">Unranked</button>
             <button class="tablinks" onclick="openTab(event, 'direct')">Direct</button>
+            <button class="tablinks" onclick="openTab(event, 'other')">Other</button>
           </div>
           {% for game_type in games %}
           <div id="{{ game_type.name }}" class="tabcontent">

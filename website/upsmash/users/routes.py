@@ -28,6 +28,7 @@ def user(connect_code):
     total_unranked_games = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).filter_by(game_type=MatchType.UNRANKED).count()
     unranked_losses = total_unranked_games - unranked_wins
     slippi_replays = SlippiReplay.query.filter((SlippiReplay.player1_id==player.id) | (SlippiReplay.player2_id==player.id)).order_by(SlippiReplay.datetime.desc())
+    
     games = [
         {
             'name': 'ranked',
@@ -41,7 +42,12 @@ def user(connect_code):
             'name': 'direct',
             'games': slippi_replays.filter_by(game_type='DIRECT').limit(40)
         },
+        {
+            'name': 'other',
+            'games': slippi_replays.filter(SlippiReplay.game_type==None).limit(40)
+        },
     ]
+    #print(list(games[3]['games']))
     context = {
         "player_ratings": player_ratings,
         "player": player,

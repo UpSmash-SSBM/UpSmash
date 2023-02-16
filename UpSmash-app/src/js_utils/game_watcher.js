@@ -1,7 +1,6 @@
 const chokidar = require('chokidar');
 const { SlippiGame } = require("@slippi/slippi-js");
 const _ = require("lodash");
-const { request } = require('http');
 const { file_submit } = require('./file_submit');
 const https = require('node:https');
 

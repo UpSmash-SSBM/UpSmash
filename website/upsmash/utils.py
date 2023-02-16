@@ -74,7 +74,7 @@ def refresh_player_rating(player, rating=None):
         losses = ranked_info['losses']
         player.ranked_wins = wins
         player.ranked_losses = losses
-    print(str(rating) + " = " + player.current_rating)
+    
     if rating == player.current_rating: #Don't want to add new datapoint if rating hasn't changed
         return False
     
