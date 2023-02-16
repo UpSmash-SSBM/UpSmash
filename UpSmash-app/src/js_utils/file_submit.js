@@ -68,7 +68,7 @@ async function file_submit(filesToSend) {
         console.log("sending " + batchStartNum)
         SLPoptions['headers'] = form.getHeaders();
         
-        await send_slippi_files(form)
+        await send_slippi_files(form);
         batchStartNum = current_num;
     }
 }

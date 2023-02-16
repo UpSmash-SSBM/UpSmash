@@ -21,7 +21,7 @@ def games_get(connect_code):
         current_player = create_new_player(connect_code)
     if not current_player:
         return None
-    played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(or_(SlippiReplay.player1_id== current_player.id, SlippiReplay.player2_id== current_player.id))]
+    played = [i for i, in SlippiReplay.query.with_entities(SlippiReplay.filename).filter(SlippiReplay.player1_id== current_player.id | SlippiReplay.player2_id== current_player.id)]
     return played
 
 def calc_ratio(count):
