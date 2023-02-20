@@ -29,7 +29,6 @@ function doFormRequest(options, form) {
                     resolve(response_body)
                 } else { 
                     console.log(response.statusCode)
-                    console.log(response)
                 }
             });
         });
@@ -43,10 +42,6 @@ function doFormRequest(options, form) {
         form.pipe(req);
     })
 }
-
-
-//calls api for uploading files
-
 
 // this function submits a list of local files in batches of 10
 // any leftovers are submitted after

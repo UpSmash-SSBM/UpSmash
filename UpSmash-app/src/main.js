@@ -46,6 +46,8 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
+let totalFiles;
+let uploadedFiles;
 ipcMain.on('submitFiles', function(e, filesToSubmit){
   file_submit(filesToSubmit);
 });

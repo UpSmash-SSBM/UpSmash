@@ -8,14 +8,14 @@ const slippi_game_end_types = {
     1: "TIME!",
     2: "GAME!",
     7: "No Contest",
-};
+}
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function rating(connect_code) {
-    await sleep(5000);
+async function rating(connect_code, sleep_amount) {
+    await sleep(sleep_amount);
     // this guy is going to actually tell the server to get new rank when its called
     // just submit the new file, and then update the rank server side, don't parse locally
     const rank_options = {
@@ -23,31 +23,31 @@ async function rating(connect_code) {
       port: '443',
       path: '/rating/' + connect_code.replace('#','-'),
       method: 'GET'
-    };
-  
-    const req = https.request(rank_options, (response) => {
-      response.setEncoding('utf8');
-      //console.log(response.statusCode);
-      // catches the servers response and prints it
-      response.on('data', (rating_response) => {
-        if (response.statusCode == 200) {
-          //console.log(rating_response);
-          return rating_response['rating']
-        }
-      });
-      // if the response is over, writes it also
-      response.on('end', () => {
-        //console.log('No more data in response.');
-      });
-    });
-    // error processing
-    req.on('error', (err) => {
-      console.log(response.statusCode);
-      console.log(err);
-    });
-    // send the actual data
-    req.write(connect_code);
-    req.end();
+    }
+    return new Promise(function (resolve, reject) {
+        const req = https.request(rank_options, (response) => {
+            response.setEncoding('utf8');
+            //console.log(response.statusCode);
+            // catches the servers response and prints it
+            response.on('data', (rating_response) => {
+                if (response.statusCode == 200) {
+                    var json_response = JSON.parse(rating_response)
+                    resolve(json_response['rating'])
+                }
+            });
+            // if the response is over, writes it also
+            response.on('end', () => {
+                //console.log('No more data in response.');
+            });
+        });
+        // error processing
+        req.on('error', (err) => {
+            console.log(response.statusCode);
+            console.log(err);
+        });
+        // send the actual data
+        req.end();
+    })
 }
 
 function file_change_handler(path, isFirstEndFrame) {
@@ -77,7 +77,7 @@ function file_change_handler(path, isFirstEndFrame) {
             //console.log(players)
             for (let i = 0; i < players.length; i++) {
                 console.log('updating rating for ' + players[i]['connectCode'])
-                rating(players[i]['connectCode'])
+                rating(players[i]['connectCode'], 5000)
             }
             // console.log(player_wins)
         }
@@ -93,8 +93,7 @@ function file_change_handler(path, isFirstEndFrame) {
 
 function game_checker(item) {
     const watcher = chokidar.watch(item, {
-        ignored: '/*.slp', // TODO: This doesn't work. Use regex?
-        depth: 0,
+        depth: 1,
         persistent: true,
         usePolling: true,
         ignoreInitial: true,

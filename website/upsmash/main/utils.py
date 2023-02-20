@@ -99,7 +99,11 @@ def load_slippi_file(filename):
         settings = data['settings']
         stats = data['stats']
         metadata = data['metadata']
-        players = metadata['players']
+        try:
+            players = metadata['players']
+        except:
+            print("Couldn't get players")
+            return None
         winner = data['winner']
         winner_id = None
         setting_players = settings['players']

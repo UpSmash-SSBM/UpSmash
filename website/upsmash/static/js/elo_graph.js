@@ -12,6 +12,12 @@ data,
 options: {
   maintainAspectRatio: false,
   responsive: true,
+  borderWidth: 2,
+  elements: {
+    point: {
+      radius: 1
+    }
+  },
   scales: {
     x: {
       type: 'time',

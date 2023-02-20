@@ -10,7 +10,7 @@ async function get_database_games(connect_code) {
         port: '443',
         path: '/player_games/' + connect_code.replace('#','-'),
         method: 'GET'
-    };
+    }
     let response = await doRequest(game_options)
     return response
 }
