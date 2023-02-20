@@ -119,9 +119,9 @@ background-color: #dfdfdf;
 
 #matchDetail{
   display: none;
-  height: 300px;
+  height: 350px;
   margin: 5px;
-  padding: 10px;
+  padding: 5px;
 }
 
 #detailWrapper{

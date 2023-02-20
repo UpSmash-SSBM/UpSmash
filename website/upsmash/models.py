@@ -107,6 +107,9 @@ class Player(db.Model):
     ranked_wins = db.Column(db.Integer)
     ranked_losses = db.Column(db.Integer)
 
+    def get_safe_connect_code(self):
+        return self.connect_code.replace('#','-').upper()
+
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 

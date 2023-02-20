@@ -64,7 +64,7 @@
                     </div>
                     <div class="flexbox-item flexbox-player flexbox-player-right">
                       <h5><img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[1].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px">
-                      {{ playersOverall[1].player.username }}</h5>
+                      <a href="/user/{{ playersOverall[1].player.get_safe_connect_code() }}">{{ playersOverall[1].player.username }}</a></h5>
                     </div>
                     <div class="detailPanel" style="background-color: 
                       {% if win  %} #444444;
@@ -77,8 +77,12 @@
                     <div class="flexbox-container matchInfoContainer">
                       <div class="flexbox-item playerMatchInfo leftPlayerMatchInfo">
                         <div class="statWrapper">
-                          <div class="detail"> Kills: </div>
-                            <div class="stat"> {{ playersOverall[0].kill_count }} </div>
+                          <div class="detail"> Tag: </div>
+                            <div class="stat"> {{ players[0].connect_code }} </div>
+                        </div>
+                        <div class="statWrapper">
+                          <div class="detail"> Openings Per Kill: </div>
+                            <div class="stat"> {{playersOverall[0].openings_per_kill|float|round(1, 'common')}} </div>
                         </div>
                         <div class="statWrapper">
                           <div class="detail"> Openings Per Kill: </div>
@@ -94,6 +98,10 @@
                         </div>
                       </div>
                       <div class="flexbox-item playerMatchInfo rightPlayerMatchInfo">
+                        <div class="statWrapper">
+                          <div class="detail"> Tag: </div>
+                            <div class="stat"> {{ players[1].connect_code }} </div>
+                        </div>
                         <div class="statWrapper">
                           <div class="detail"> Kills: </div>
                             <div class="stat"> {{ playersOverall[1].kill_count }} </div>
