@@ -40,7 +40,7 @@
             <button class="tablinks" onclick="openTab(event, 'ranked')" id="defaultOpen">Ranked</button>
             <button class="tablinks" onclick="openTab(event, 'unranked')">Unranked</button>
             <button class="tablinks" onclick="openTab(event, 'direct')">Direct</button>
-            <button class="tablinks" onclick="openTab(event, 'other')">Other</button>
+            <button class="tablinks" onclick="openTab(event, 'direct')">Other</button>
           </div>
           {% for game_type in games %}
           <div id="{{ game_type.name }}" class="tabcontent">
@@ -59,7 +59,8 @@
                       <img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[0].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px"></h5>
                     </div>
                     <div class="flexbox-item flexbox-player flexbox-player-middle">
-                      <h5>{{ replay.datetime.strftime('%m/%d/%Y - %I:%M %p') }}</h5>
+                      <h5>{{ replay.datetime.strftime('%m/%d/%Y') }}</h5>
+                      <h5>{{ replay.datetime.strftime('%I:%M %p') }}</h5>
                     </div>
                     <div class="flexbox-item flexbox-player flexbox-player-right">
                       <h5><img src="{{ url_for('static', filename=replay.get_player_info_ordered(player.id)[1].get_character_icon()) }}" title="character_icon" alt="character_icon" style="height: 80px">
