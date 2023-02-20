@@ -21,7 +21,7 @@
     <div class="flexbox-item flexbox-item-1">
       <h2>{{ player.username }} <img src="{{ url_for('static', filename=character_image_location) }}" title="character_icon" alt="character_icon" style="height: 30px; width: 30px;"></h2>
       <p>{{ player.connect_code }}</p>
-      <h5>Current Rating: {{ player.current_rating | int }} <object data="{{ url_for('static', filename=rank_icon_location) }}" alt="rank_icon" style="height: 30px; width: 30px;"></object></h5>
+      <h5>Current Rating: {{ player.current_rating | round(0, 'common') | int }} <object data="{{ url_for('static', filename=rank_icon_location) }}" alt="rank_icon" style="height: 30px; width: 30px;"></object></h5>
       <h5>Ranked: <span style="color: #00FF00">{{ player.ranked_wins }}</span>/<span style="color:#FF0000">{{ player.ranked_losses }}</span></h5>
       <h5>Unranked: <span style="color: #00FF00">{{ wins }}</span>/<span style="color:#FF0000">{{ losses }}</span></h5>
       <h5>Total SLP Files: {{ total_games }}</h5>
@@ -40,7 +40,7 @@
             <button class="tablinks" onclick="openTab(event, 'ranked')" id="defaultOpen">Ranked</button>
             <button class="tablinks" onclick="openTab(event, 'unranked')">Unranked</button>
             <button class="tablinks" onclick="openTab(event, 'direct')">Direct</button>
-            <button class="tablinks" onclick="openTab(event, 'direct')">Other</button>
+            <button class="tablinks" onclick="openTab(event, 'other')">Other</button>
           </div>
           {% for game_type in games %}
           <div id="{{ game_type.name }}" class="tabcontent">
