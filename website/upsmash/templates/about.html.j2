@@ -2,20 +2,60 @@
 
 {% set title="About" %}
 
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/about.css') }}">
+{% endblock %}
+
 {% block body %}
-<h3>About</h3>
+<div id="fullAboutDiv">
+    <h3>About</h3>
+    <div id="what">
+        <h4>What is UpSmash</h4>
+        <p>UpSmash is a project dedicated to bringing you the best stats possible from Super Smash Bros Melee. 
+        This includes a variety of sources, including Slippi ranked data, Slippi files, and comparisons to the broader community.</p>
+        <p>The project currently has a website and a companion desktop app. You can upload slippi files either through the upload 
+        area on the home page or by using the desktop app. If you are using the desktop app, then simply select your slippi folder 
+        and the app will work in the background to upload your slippi files. It will also upload new files when they appear. 
+        In addition to that, the desktop app will track when you finish a ranked game and refresh your rating every time you finish 
+        a ranked set. This allows you to keep track of your rating changes after every win or loss.</p>
+    </div>
+    <div id="works">
+        <h4>Who works on UpSmash</h4>
+        <div class="flexbox-container personContainer">
+            <div class="flexbox-item personPicture">
+                <img src="{{ url_for('static', filename='images/chris.jpg') }}" height="100px">
+            </div>
+            <div class="flexbox-item personText">
+                <h5>Chris Schmitt <a href="https://twitter.com/ChrisSchmitt98"><img src="{{ url_for('static', filename='images/twitter-logo.png') }}" height="20px"></a></h5>
+                <p>Has been a member of the Melee community since 2015. Been working on passion projects around Melee since 2018 and started working on a Slippi file database in late-2022.</p>
+            </div>
+        </div>
+        <div class="flexbox-container personContainer">
+            <div class="flexbox-item personPicture">
+                <img src="{{ url_for('static', filename='images/ryan.png') }}" height="100px">
+            </div>
+            <div class="flexbox-item personText">
+                <h5>Ryan Yeung </h5>
+                <p>A newer member of the community, Ryan has been instrumental the start of UpSmash, including planning, working on desktop app development, and outreach.</p>
+            </div>
+        </div>
+        
+        
+    </div>
+    <div id="socials">
+    <h4>Socials</h4>
+        <div id="discord">
+            <p class="socials">For any questions, head to the discord</p>
+            <a href="https://discord.gg/e2387s8neq"><img src="{{ url_for('static', filename='images/discord.png') }}" height="60"></a>
+        </div>
+        <p class="socials">To follow development, follow us on Twitter</p>
+        <a href="https://twitter.com/UpSmashSSBM?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @UpSmashSSBM</a>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+</div>
 
-<h4>What is UpSmash</h4>
-<p>UpSmash is a project dedicated to bringing you the best stats possible from Super Smash Bros Melee. This includes a variety of sources, including Slippi ranked data, Slippi files, and comparisons to the broader community.</p>
 
-<h4>Who works on UpSmash</h4>
-<h5>Chris Schmitt </h5>
-<p>Has been a member of the Melee community since 2015. Been working on passion projects around Melee since 2018 and started working on a Slippi file database in late-2022.</p>
-<h5>Ryan Yeung</h5>
-<p>A newer member of the community, Ryan has been instrumental the start of UpSmash, including planning, working on backend tasks, and database layouts.</p>
 
-<h4>Socials</h4>
-<a href="https://twitter.com/ChrisSchmitt98?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @ChrisSchmitt98</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<p><a href="https://discord.gg/e2387s8neq"><img src="{{ url_for('static', filename='images/discord.png') }}" width="200" height="75"></a></p>
+
 
 {% endblock %}
