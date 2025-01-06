@@ -1,10 +1,13 @@
 import pytest
 from upsmash import create_full_app
+from upsmash import db
 
 @pytest.fixture
 def app():
     app = create_full_app()
     app.config['TESTING'] = True
+    with app.app_context():
+        db.create_all()
     return app
 
 @pytest.fixture
