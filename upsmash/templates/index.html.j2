@@ -1,0 +1,63 @@
+{% extends 'base.html.j2' %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+<script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
+<link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<div class="content-section">
+    <img id="upSmashLogo" src="{{ url_for('static', filename='images/UpSmash-02-purple.jpg') }}" alt="UpSmash Logo">
+    <br>
+    <div class="flexCenter">
+      <form action="/user" method="POST" enctype="multipart/form-data" role="search">
+          <input id="search" name="connect_code" type="search" placeholder="Enter player Slippi tag" autofocus required />
+          <button type="submit">
+              <img src="{{ url_for('static', filename='images/search.svg') }}" width="25" height="25">
+          </button>
+      </form>
+    </div>
+      <br>
+      <div class="flexCenter flexCenterText">
+        <div id="dropzone" class="dropzone dz-clickable">
+          <div id="dropzoneMessage" class="dz-message" data-dz-message><span><p>Upload some Slippi files<br>
+            You can usually find it at: "C:/Users/&lt;username&gt;/Documents/Slippi"<br>
+            Select the folder itself, not its contents</span></div>
+        </div>
+      </div>
+      <div class="flexCenter flexCenterText">
+        <br><br><br>
+        <h4><a href="{{ url_for('static', filename='installers/UpSmashInstaller.exe') }}" download>Download the Desktop App</a>
+          <a href="https://discord.gg/e2387s8neq"> <img src="{{ url_for('static', filename='images/discord.png') }}" height="50px"></a>
+        </h4>
+      </div>
+      {% if na_players | length == 10 and eu_players | length == 10 and other_players | length == 10 %}
+      <div class="flexbox-container flexbox-container1">
+        <div class="flexbox-item flexbox-item-1">
+          <h3>Top Players</h3>
+          <table>
+            <tr>
+              <th>NA</th>
+              <th>EU</th>
+              <th>Other</th>
+            </tr>
+            {% for n in range(10) %}
+              <tr>
+                <td><a href="/user/{{ na_players[n].connect_code | replace('#','-') }}">{{ na_players[n].username }}</a>
+                <img src="{{ url_for('static', filename='images/stock_icons/' + ( na_players[n].character | string).lower() + '.png') }}" alt="character_icon" style="height: 20px; width: 20px;"> </td>
+                <td><a href="/user/{{ eu_players[n].connect_code | replace('#','-') }}">{{ eu_players[n].username }}</a>
+                <img src="{{ url_for('static', filename='images/stock_icons/' + ( eu_players[n].character | string).lower() + '.png') }}" alt="character_icon" style="height: 20px; width: 20px;"></td>
+                <td><a href="/user/{{ other_players[n].connect_code | replace('#','-') }}">{{ other_players[n].username }}</a>
+                <img src="{{ url_for('static', filename='images/stock_icons/' + ( other_players[n].character | string).lower() + '.png') }}" alt="character_icon" style="height: 20px; width: 20px;"></td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/dropzone.js') }}"></script>
+{% endblock %}
