@@ -2,6 +2,7 @@ graphs/
 *.json
 package-lock.json
 *.db
+!config_ex.json
 
 # Logs
 logs
