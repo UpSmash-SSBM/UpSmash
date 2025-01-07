@@ -3,8 +3,8 @@ const fs = require('fs');
 const { performance } = require('perf_hooks');
 
 
-let input_folder = '../website/upsmash/static/files/'
-let output_folder = '../website/upsmash/static/json/'
+let input_folder = 'upsmash/static/files/'
+let output_folder = 'upsmash/static/json/'
 //let file = "Game_20221201T132125.slp"
 let file = process.argv[2]
 let full_filename = input_folder + file

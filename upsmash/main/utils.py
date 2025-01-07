@@ -152,7 +152,7 @@ def load_slippi_file(filename):
             add_slippi_file_to_overall(new_slippi_replay, filename, players, stats['overall'])
 
 def load_slippi_files(filename):
-    subprocess.run(["node", "../slippi_js/to_json.js",filename])
+    subprocess.run(["node", "to_json.js",filename])
     slp_path = os.path.join('upsmash/static/files/', filename)
     if os.path.exists(slp_path):
         os.remove(slp_path)

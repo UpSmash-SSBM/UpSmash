@@ -17,6 +17,7 @@ def user(connect_code):
     player = get_player_or_abort(connect_code)
     refresh_player_rating(player)
     player = Player.query.filter_by(connect_code=connect_code).first()
+    print(player.ranked_wins)
 
     player_ratings = PlayerRating.query.filter_by(player_id=player.id).order_by(PlayerRating.datetime).all() #.limit(10)
     data_items = []

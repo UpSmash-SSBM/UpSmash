@@ -101,11 +101,11 @@ class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     connect_code = db.Column(db.String(10), nullable=False, unique=True)
     username = db.Column(db.String(20))
-    character = db.Column(db.Enum(MeleeCharacters))
+    character = db.Column(db.Enum(MeleeCharacters), default=MeleeCharacters.FOX)
     region = db.Column(db.String(40))
     current_rating = db.Column(db.Float)
-    ranked_wins = db.Column(db.Integer)
-    ranked_losses = db.Column(db.Integer)
+    ranked_wins = db.Column(db.Integer, default=0)
+    ranked_losses = db.Column(db.Integer, default=0)
 
     def get_safe_connect_code(self):
         return self.connect_code.replace('#','-').upper()
