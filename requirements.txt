@@ -4,3 +4,5 @@ Flask-SQLAlchemy
 requests
 SQLAlchemy
 selenium
+boto3
+gunicorn
