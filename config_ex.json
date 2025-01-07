@@ -1,0 +1,8 @@
+{
+    "SECRET_KEY":"",
+    "SQLALCHEMY_DATABASE_URI":"sqlite:///../instance/db.sqlite3",
+    "STATIC_FOLDER":"static/",
+    "S3_BUCKET":"",
+    "S3_ACCESS":"",
+    "S3_PRIVATE":""
+}

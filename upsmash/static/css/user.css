@@ -1,0 +1,204 @@
+
+/*      
+border: 3px solid #333;
+background-color: #dfdfdf;
+*/
+.flexbox-container {
+  display: flex;
+  background-color: #333333;
+}
+
+.flexbox-container1 {
+  border: 3px solid #222222;
+  border-radius: .7rem;
+  min-height: 1000px;
+}
+
+.flexbox-container2 {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.flexbox-container3 {
+  background-color: #222222;
+  border-radius: .5rem;
+}
+
+
+.flexbox-container4 {
+  flex-direction: column;
+  align-items: stretch;
+  margin-bottom: 15px;
+}
+
+.flexbox-item {
+  margin: 10px;
+  background-color: #333333;
+}
+
+.flexbox-item-1 {
+  flex: 3 0 0;
+  min-height: 500px;
+}
+
+.flexbox-item-2 {
+  flex: 10 0 0;
+}
+
+#myChart {
+  border: 3px solid #333333;
+  border-radius: .7rem;
+}
+
+.chartBox {
+  max-height: 125px;
+}
+
+.flexbox-item-3 {
+  flex: 2 0 0;
+  min-height: 125px;
+}
+
+.flexbox-player {
+  background-color: rgba(0,0,0,0);
+  height: 20px;
+  align-items: stretch;
+  margin: 0;
+  min-height: 100px;
+  padding: 10px;
+}
+
+.flexbox-player-left {
+  flex: 10 0 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.flexbox-player-middle {
+  flex: 6 0 0;
+  text-align: center;
+}
+
+.flexbox-player-right {
+  flex: 10 0 0;
+  text-align: right;
+}
+
+.playerMatchInfo {
+  flex: 2 0 0;
+  align-items: stretch;
+}
+
+.flexbox-item-second {
+  min-height: 100px;
+  flex-grow: 100%;
+  border: 3px solid #222222;
+  /*background-color: #222222;*/
+  border-radius: .7rem;
+}
+
+.detail{
+  display: flex;
+  font-size: 12px;
+  margin-left: 7px;
+  color: #878787;
+}
+
+.stat{
+  display: flex;
+  font-size: 24px;
+  margin-bottom: 5px;
+  margin-left: 7px;
+}
+
+.detailPanel{
+  width: 40px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#matchDetail{
+  display: none;
+  height: 350px;
+  margin: 5px;
+  padding: 5px;
+}
+
+#detailWrapper{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  height: 100%;
+  margin-top: 5px;
+}
+
+p {
+  line-height: 10px;   /* within paragraph */
+  margin-bottom: 5px; /* between paragraphs */
+}
+
+div{
+  display: block;
+}
+
+button.detailButton {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: auto;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 0px solid #ccc;
+  background-color: #333333;
+  margin-left: 18px;
+  height: 40px;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0px 16px;
+  transition: 0.3s;
+  margin-left: 5px;
+  color: #ccc;
+  height: inherit;
+  border-radius: 4px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+  border-radius: 4px;
+  color: #000000;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+  border-radius: 4px;
+  color: #000000;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 0px solid #ccc;
+  border-top: none;
+}
+
+
+.button:focus {
+  outline: none;
+}
