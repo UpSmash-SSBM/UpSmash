@@ -8,5 +8,4 @@ RUN npm install @slippi/slippi-js
 RUN python pull_top_50.py
 
 EXPOSE 5000
-ENTRYPOINT ["python"]
-CMD ["run.py"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]

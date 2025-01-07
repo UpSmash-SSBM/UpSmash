@@ -10,6 +10,9 @@ from upsmash.models import Player, SlippiReplay, SlippiActionCounts, SlippiOvera
 from upsmash import db
 from upsmash.utils import create_new_player, refresh_player_rating
 from upsmash import create_min_app
+from upsmash.config import Config
+from boto3 import session as BotoSession
+import zipfile
 
 app = create_min_app()
 app.app_context().push()
@@ -31,6 +34,21 @@ def calc_ratio(count):
     else:
         ratio = None
     return ratio
+
+def upload_slippi_file_to_s3(local_filename, upload_filename):
+    session = BotoSession.Session()
+    client = session.client('s3',
+                            region_name='nyc3',
+                            endpoint_url=Config.S3_BUCKET,
+                            aws_access_key_id=Config.S3_ACCESS,
+                            aws_secret_access_key=Config.S3_PRIVATE)
+    client.upload_file(local_filename, 'slippifiles', upload_filename)
+
+def create_zip_file(local_filename, game_filename):
+    archive_directory = 'upsmash/static/archive_files/'
+    zip_filename = archive_directory + game_filename + '.zip'
+    with zipfile.ZipFile(zip_filename,'w', zipfile.ZIP_DEFLATED) as zip:
+        zip.write(local_filename, arcname = game_filename)
 
 def add_slippi_file_to_overall(slippi_replay, filename, players, overall):
     for player in overall:
@@ -152,10 +170,15 @@ def load_slippi_file(filename):
             add_slippi_file_to_overall(new_slippi_replay, filename, players, stats['overall'])
 
 def load_slippi_files(filename):
+    archive_directory = 'upsmash/static/archive_files/'
+    zip_filename = archive_directory + filename + '.zip'
     subprocess.run(["node", "to_json.js",filename])
     slp_path = os.path.join('upsmash/static/files/', filename)
+#    create_zip_file(slp_path, filename)
     if os.path.exists(slp_path):
         os.remove(slp_path)
+#    upload_slippi_file_to_s3(zip_filename, filename + '.zip')
+#    os.remove(zip_filename)
     base_filename = filename.split('.')[0]
     load_slippi_file(base_filename)
     json_path = os.path.join('upsmash/static/json/', base_filename + '.json')
