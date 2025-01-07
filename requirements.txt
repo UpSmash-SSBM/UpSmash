@@ -3,3 +3,4 @@ Flask
 Flask-SQLAlchemy
 requests
 SQLAlchemy
+selenium

@@ -1,4 +1,5 @@
 from upsmash import create_full_app
+from upsmash import db
 from upsmash.utils import get_or_create_player
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
@@ -9,9 +10,13 @@ import os
 
 app = create_full_app()
 
+with app.app_context():
+    db.create_all()
+
+top_50_players = []
+
 file_output = 'top_50_players.json'
 if not os.path.exists(file_output):
-    top_50_players = []
     engine_url = ['sqlite:///db.sqlite3']
     url = "https://slippi.gg/leaderboards?region="
     regions = ['na', 'eu', 'other']
@@ -31,10 +36,14 @@ if not os.path.exists(file_output):
             top_50_players.append((player_name, player_tag))
     driver.close()
 
+    with open(file_output, 'w') as json_file:
+        json.dump(top_50_players, json_file, indent=2)
     print(json.dumps(top_50_players))
-else:
+
+if len(top_50_players) == 0:
     with open(file_output) as player_file:
         top_50_players = json.load(player_file)
-        for player in top_50_players:
-            print(player[1])
-            get_or_create_player(player[1])
+for player in top_50_players:
+    
+    new_player = get_or_create_player(player[1])
+    print(new_player)

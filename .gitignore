@@ -3,6 +3,7 @@ graphs/
 package-lock.json
 *.db
 !config_ex.json
+!top_50_players.json
 
 # Logs
 logs
