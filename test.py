@@ -18,3 +18,4 @@ def client(app):
 def test_app_is_working(client):
     response = client.get('/')
     assert response.status_code == 200
+    assert b"UpSmash" in response.data
